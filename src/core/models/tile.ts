@@ -1,5 +1,6 @@
 import { Board } from './board'
 import type { Col, Row } from './board'
+import type { Color } from './piece'
 
 export type TileName = `${Col}${Row}`
 
@@ -9,6 +10,7 @@ export class Tile {
   public readonly rowName: Row
   public readonly colName: Col
   public readonly name: TileName
+  public readonly color: Color
 
   constructor(col: Col, row: Row)
   constructor(col: number, row: number)
@@ -23,7 +25,7 @@ export class Tile {
       this.col = Board.Cols.indexOf(colOrName as Col)
       this.row = typeof row === 'string' ? Board.Rows.indexOf(row) : row
     } else {
-      // (pos: SquareName), e.g. "A1"
+      // (pos: TileName), e.g. "A1"
       const [colName, rowName] = colOrName.split('') as [Col, Row]
       this.col = Board.Cols.indexOf(colName)
       this.row = Board.Rows.indexOf(rowName)
@@ -32,5 +34,6 @@ export class Tile {
     this.rowName = Board.Rows[this.row]
     this.colName = Board.Cols[this.col]
     this.name = `${this.colName}${this.rowName}`
+    this.color = (this.row + this.col) % 2 ? 'white' : 'black'
   }
 }

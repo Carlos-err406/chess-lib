@@ -11,11 +11,14 @@ export type Row = (typeof Board.Rows)[number]
 export type Col = (typeof Board.Cols)[number]
 
 export class Board {
-  private grid: (Piece | null)[][] = []
+  private _grid: (Piece | null)[][] = []
+
   constructor() {
     this.initBoard()
   }
-
+  get grid() {
+    return this._grid
+  }
   public static readonly Cols = [
     'A',
     'B',
@@ -39,7 +42,7 @@ export class Board {
 
   private initBoard() {
     // initialize the grid's dimensions
-    this.grid = Array.from({ length: Board.Rows.length }, () =>
+    this._grid = Array.from({ length: Board.Rows.length }, () =>
       Array.from({ length: Board.Cols.length }, () => null),
     )
 
@@ -61,28 +64,25 @@ export class Board {
 
     for (const { color, backRow, pawnRow } of layout) {
       Board.Cols.forEach((column, i) => {
-        this.setPieceAtTile(
-          new backRank[i](color),
-          new Tile(column, backRow),
-        )
+        this.setPieceAtTile(new backRank[i](color), new Tile(column, backRow))
         this.setPieceAtTile(new Pawn(color), new Tile(column, pawnRow))
       })
     }
   }
 
   private setPieceAtTile(piece: Piece, tile: Tile) {
-    this.grid[tile.row][tile.col] = piece
+    this._grid[tile.row][tile.col] = piece
   }
 
   public pieceAt(tile: Tile) {
-    return this.grid[tile.row][tile.col]
+    return this._grid[tile.row][tile.col]
   }
 
   public toString() {
     let boardBuffer = `  ${Board.Cols.join('')}\n`
-    for (let i = this.grid.length - 1; i >= 0; i--) {
+    for (let i = this._grid.length - 1; i >= 0; i--) {
       let rowBuffer = Board.Rows[i] + ' '
-      const row = this.grid[i]
+      const row = this._grid[i]
       for (const col of row) {
         rowBuffer += col?.key ?? ' '
       }

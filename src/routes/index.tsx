@@ -2,6 +2,9 @@ import { TILE_SIZE } from '#/components/canvas/conf.ts'
 import { KBoard } from '#/components/canvas/k-board.tsx'
 import { createFileRoute } from '@tanstack/react-router'
 import { Stage } from 'react-konva'
+import Konva from 'konva'
+
+Konva.pixelRatio = 3 // increase the dpi
 
 export const Route = createFileRoute('/')({
   component: Home,
