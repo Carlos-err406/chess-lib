@@ -2,6 +2,9 @@
   "files.watcherExclude": {
     "**/routeTree.gen.ts": true
   },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
   "search.exclude": {
     "**/routeTree.gen.ts": true
   },
