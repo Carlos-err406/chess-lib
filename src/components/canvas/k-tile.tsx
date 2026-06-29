@@ -31,7 +31,7 @@ export const KTile: FC<{
         y={y + strokeWidth / 2}
         width={TILE_SIZE - strokeWidth}
         height={TILE_SIZE - strokeWidth}
-        fill={TILE_COLOR[tile.color]}
+        fill={TILE_COLOR[tile.shade]}
         stroke={TILE_STROKE}
         strokeWidth={strokeWidth}
       />

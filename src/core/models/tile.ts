@@ -1,8 +1,8 @@
-import { Board } from './board'
 import type { Col, Row } from './board'
-import type { Color } from './piece'
+import { Board } from './board'
 
 export type TileName = `${Col}${Row}`
+export type TileShade = 'light' | 'dark'
 
 export class Tile {
   public readonly row: number
@@ -10,7 +10,7 @@ export class Tile {
   public readonly rowName: Row
   public readonly colName: Col
   public readonly name: TileName
-  public readonly color: Color
+  public readonly shade: TileShade
 
   constructor(col: Col, row: Row)
   constructor(col: number, row: number)
@@ -34,6 +34,6 @@ export class Tile {
     this.rowName = Board.Rows[this.row]
     this.colName = Board.Cols[this.col]
     this.name = `${this.colName}${this.rowName}`
-    this.color = (this.row + this.col) % 2 ? 'white' : 'black'
+    this.shade = (this.row + this.col) % 2 ? 'light' : 'dark'
   }
 }
