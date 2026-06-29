@@ -1,15 +1,16 @@
+import { Board } from '#/core/models/board.ts'
 import type { Piece } from '#/core/models/piece.ts'
 import type { Tile } from '#/core/models/tile.ts'
 import type { FC } from 'react'
 import { useState } from 'react'
-import { Group, Rect, Text } from 'react-konva'
+import { Group, Rect } from 'react-konva'
 import {
   TILE_COLOR,
   TILE_HOVER_STROKE_WIDTH,
   TILE_SIZE,
   TILE_STROKE,
 } from './conf'
-import { Board } from '#/core/models/board.ts'
+import { KPiece } from './k-piece'
 
 export const KTile: FC<{
   tile: Tile
@@ -19,6 +20,7 @@ export const KTile: FC<{
   const strokeWidth = hovering ? TILE_HOVER_STROKE_WIDTH : 0
   const x = tile.col * TILE_SIZE
   const y = (Board.Rows.length - 1 - tile.row) * TILE_SIZE // whites at the bottom
+  const coord = { x, y }
   return (
     <Group
       onMouseEnter={() => setHovering(true)}
@@ -33,15 +35,7 @@ export const KTile: FC<{
         stroke={TILE_STROKE}
         strokeWidth={strokeWidth}
       />
-      <Text
-        text={piece?.key ?? ''}
-        x={x}
-        y={y}
-        width={TILE_SIZE}
-        height={TILE_SIZE}
-        align="center"
-        verticalAlign="middle"
-      />
+      {piece && <KPiece {...{ piece, coord }} />}
     </Group>
   )
 }

@@ -1,8 +1,8 @@
 import { TILE_SIZE } from '#/components/canvas/conf.ts'
 import { KBoard } from '#/components/canvas/k-board.tsx'
 import { createFileRoute } from '@tanstack/react-router'
-import { Stage } from 'react-konva'
 import Konva from 'konva'
+import { Stage } from 'react-konva'
 
 Konva.pixelRatio = 3 // increase the dpi
 
@@ -16,7 +16,7 @@ function Home() {
       <Stage
         height={TILE_SIZE * 8}
         width={TILE_SIZE * 8}
-        className="border-2 border-black/50 rounded-2xl overflow-clip shadow-2xl"
+        className="shadow-[0_0_10px_10px_#0000001a]"
       >
         <KBoard />
       </Stage>
