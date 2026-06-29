@@ -1,23 +1,28 @@
 import { Board } from '#/core/models/board.ts'
-import type { Piece } from '#/core/models/piece.ts'
 import type { Tile } from '#/core/models/tile.ts'
 import type { FC } from 'react'
 import { useState } from 'react'
 import { Group, Rect } from 'react-konva'
 import {
   TILE_COLOR,
+  TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR,
   TILE_HOVER_STROKE_WIDTH,
   TILE_SIZE,
-  TILE_STROKE,
+  TILE_STROKE_COLOR,
 } from './conf'
 import { KPiece } from './k-piece'
 
 export const KTile: FC<{
   tile: Tile
-  piece: Piece | null
-}> = ({ tile, piece }) => {
+  highlightLegalMove?: boolean
+  onClick: () => void
+}> = ({ tile, onClick, highlightLegalMove = false }) => {
   const [hovering, setHovering] = useState(false)
-  const strokeWidth = hovering ? TILE_HOVER_STROKE_WIDTH : 0
+  const strokeWidth =
+    hovering || highlightLegalMove ? TILE_HOVER_STROKE_WIDTH : 0
+  const strokeColor = highlightLegalMove
+    ? TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR
+    : TILE_STROKE_COLOR
   const x = tile.col * TILE_SIZE
   const y = (Board.Rows.length - 1 - tile.row) * TILE_SIZE // whites at the bottom
   const coord = { x, y }
@@ -25,6 +30,7 @@ export const KTile: FC<{
     <Group
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
+      onClick={onClick}
     >
       <Rect
         x={x + strokeWidth / 2}
@@ -32,10 +38,10 @@ export const KTile: FC<{
         width={TILE_SIZE - strokeWidth}
         height={TILE_SIZE - strokeWidth}
         fill={TILE_COLOR[tile.shade]}
-        stroke={TILE_STROKE}
+        stroke={strokeColor}
         strokeWidth={strokeWidth}
       />
-      {piece && <KPiece {...{ piece, coord }} />}
+      {tile.piece && <KPiece {...{ piece: tile.piece, coord }} />}
     </Group>
   )
 }

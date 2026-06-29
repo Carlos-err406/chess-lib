@@ -1,5 +1,6 @@
 export const TILE_SIZE = 100
-export const TILE_STROKE = '#666'
+export const TILE_STROKE_COLOR = '#666'
+export const TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR = '#00f'
 export const TILE_HOVER_STROKE_WIDTH = 4
 export const TILE_COLOR = { light: '#fff', dark: '#999' }
 

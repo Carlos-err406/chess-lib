@@ -2,23 +2,31 @@ import { Bishop } from './bishop'
 import { King } from './king'
 import { Knight } from './knight'
 import { Pawn } from './pawn'
-import type { Piece } from './piece'
+import type { Color, Piece } from './piece'
 import { Queen } from './queen'
 import { Rook } from './rook'
+import type { TileName } from './tile'
 import { Tile } from './tile'
 
 export type Row = (typeof Board.Rows)[number]
 export type Col = (typeof Board.Cols)[number]
 
 export class Board {
-  private _grid: (Piece | null)[][] = []
+  private grid: Tile[][] = []
 
-  constructor() {
-    this.initBoard()
+  constructor(board?: Board) {
+    if (!board) {
+      this.initBoard()
+      return
+    }
+    this.initEmpty()
+    for (let i = 0; i < Board.Rows.length; i++) {
+      for (let j = 0; j < Board.Cols.length; j++) {
+        this.grid[i][j] = new Tile(board.grid[i][j])
+      }
+    }
   }
-  get grid() {
-    return this._grid
-  }
+
   public static readonly Cols = [
     'A',
     'B',
@@ -40,12 +48,14 @@ export class Board {
     '8',
   ] as const
 
-  private initBoard() {
+  private initEmpty() {
     // initialize the grid's dimensions
-    this._grid = Array.from({ length: Board.Rows.length }, () =>
-      Array.from({ length: Board.Cols.length }, () => null),
+    this.grid = Array.from({ length: Board.Rows.length }, (_row, i) =>
+      Array.from({ length: Board.Cols.length }, (_col, j) => new Tile(j, i)),
     )
-
+  }
+  private initBoard() {
+    this.initEmpty()
     const backRank = [
       Rook,
       Knight,
@@ -63,28 +73,76 @@ export class Board {
     ] as const
 
     for (const { color, backRow, pawnRow } of layout) {
-      Board.Cols.forEach((column, i) => {
-        this.setPieceAtTile(new backRank[i](color), new Tile(column, backRow))
-        this.setPieceAtTile(new Pawn(color), new Tile(column, pawnRow))
+      Board.Cols.forEach((colName, c) => {
+        const back = new Tile(colName, backRow)
+        const pawn = new Tile(colName, pawnRow)
+        this.grid[back.row][back.col].setPiece(new backRank[c](color))
+        this.grid[pawn.row][pawn.col].setPiece(new Pawn(color))
       })
     }
   }
-
-  private setPieceAtTile(piece: Piece, tile: Tile) {
-    this._grid[tile.row][tile.col] = piece
+  public tileAt(col: number, row: number): Tile {
+    return this.grid[row][col]
+  }
+  public tileAtParts(col: Col, row: Row): Tile {
+    const t = new Tile(col, row)
+    return this.grid[t.row][t.col]
+  }
+  public tileAtName(name: TileName): Tile {
+    const t = new Tile(name)
+    return this.grid[t.row][t.col]
+  }
+  public placePiece(piece: Piece | null, at: TileName): void {
+    const t = new Tile(at)
+    this.grid[t.row][t.col].setPiece(piece) // you have [t.row][t.col] here — correct
   }
 
-  public pieceAt(tile: Tile) {
-    return this._grid[tile.row][tile.col]
+  public static isOnBoard(col: number, row: number): boolean {
+    return (
+      col >= 0 && col < Board.Cols.length && row >= 0 && row < Board.Rows.length
+    )
+  }
+
+  public move(from: Tile, to: Tile) {
+    const fromPiece = from.piece
+    if (!fromPiece) return undefined
+    const fromTile = this.tileAtName(from.name)
+    const toTile = this.tileAtName(to.name)
+    const captured = toTile.piece
+    const flippedMovedFlag = fromPiece.moved === false
+    fromPiece.moved = true
+    toTile.setPiece(fromPiece)
+    fromTile.setPiece(null)
+    return { captured, flippedMovedFlag }
+  }
+
+  public getKingTile(color: Color) {
+    for (const row of this.grid) {
+      for (const tile of row) {
+        if (tile.piece instanceof King && tile.piece.color === color)
+          return tile
+      }
+    }
+    throw new Error(`Invalid game state ${color} King is not in the board`)
+  }
+
+  public getPlayerTiles(color: Color) {
+    const tiles: Tile[] = []
+    for (const row of this.grid) {
+      for (const tile of row) {
+        if (tile.piece?.color === color) tiles.push(tile)
+      }
+    }
+    return tiles
   }
 
   public toString() {
     let boardBuffer = `  ${Board.Cols.join('')}\n`
-    for (let i = this._grid.length - 1; i >= 0; i--) {
+    for (let i = this.grid.length - 1; i >= 0; i--) {
       let rowBuffer = Board.Rows[i] + ' '
-      const row = this._grid[i]
-      for (const col of row) {
-        rowBuffer += col?.key ?? ' '
+      const row = this.grid[i]
+      for (const tile of row) {
+        rowBuffer += tile.piece?.key ?? ' '
       }
       boardBuffer += rowBuffer + '\n'
     }

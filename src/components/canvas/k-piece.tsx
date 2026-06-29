@@ -4,10 +4,10 @@ import type { FC } from 'react'
 import { TILE_SIZE } from './conf'
 import { URLImage } from './url-image'
 
-export const KPiece: FC<{ piece: Piece; coord: Vector2d }> = ({
-  piece,
-  coord,
-}) => {
+export const KPiece: FC<{
+  piece: Piece
+  coord: Vector2d
+}> = ({ piece, coord }) => {
   return (
     <URLImage
       src={piece.assetUrl}
