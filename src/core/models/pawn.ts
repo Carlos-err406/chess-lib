@@ -1,20 +1,20 @@
-import type { Board } from './board';
-import type { MoveDelta } from './piece';
+import type { Board } from './board'
+import type { MoveDelta } from './piece'
 import {
-    Colors,
-    MOVE_DIAG_DOWN_LEFT,
-    MOVE_DIAG_DOWN_RIGHT,
-    MOVE_DIAG_UP_LEFT,
-    MOVE_DIAG_UP_RIGHT,
-    MOVE_DOWN,
-    MOVE_DOWN2,
-    MOVE_UP,
-    MOVE_UP2,
-    MoveKinds,
-    Piece,
-    TileKinds,
-} from './piece';
-import type { Tile } from './tile';
+  Colors,
+  MOVE_DIAG_DOWN_LEFT,
+  MOVE_DIAG_DOWN_RIGHT,
+  MOVE_DIAG_UP_LEFT,
+  MOVE_DIAG_UP_RIGHT,
+  MOVE_DOWN,
+  MOVE_DOWN2,
+  MOVE_UP,
+  MOVE_UP2,
+  MoveKinds,
+  Piece,
+  TileKinds,
+} from './piece'
+import type { Tile } from './tile'
 
 export class Pawn extends Piece {
   public static WHITE_MOVE_DELTAS: MoveDelta[] = [MOVE_UP]

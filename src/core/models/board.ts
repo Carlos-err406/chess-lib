@@ -2,7 +2,8 @@ import { Bishop } from './bishop'
 import { King } from './king'
 import { Knight } from './knight'
 import { Pawn } from './pawn'
-import { Colors, type Piece } from './piece'
+import type { Piece } from './piece'
+import { Colors } from './piece'
 import { Queen } from './queen'
 import { Rook } from './rook'
 import type { TileName } from './tile'
@@ -10,7 +11,6 @@ import { Tile } from './tile'
 
 export type Row = (typeof Board.Rows)[number]
 export type Col = (typeof Board.Cols)[number]
-
 export class Board {
   private grid: Tile[][] = []
 
@@ -112,15 +112,20 @@ export class Board {
     fromPiece.moved = true
     return { captured, flippedMovedFlag }
   }
-  public getKingTile(color: Colors) {
-    for (const row of this.grid) {
-      for (const tile of row) {
+  public getKingTile<T extends boolean = false>(
+    color: Colors,
+    simulation: T = false as T,
+  ): T extends true ? Tile | undefined : Tile {
+    for (const row of this.grid)
+      for (const tile of row)
         if (tile.piece instanceof King && tile.piece.color === color)
           return tile
-      }
-    }
-    throw new Error(`Invalid game state ${color} King is not in the board`)
+
+    if (!simulation)
+      throw new Error(`Invalid game state: ${color} king not on board`)
+    return undefined as T extends true ? Tile | undefined : Tile
   }
+
   public getPlayerTiles(color: Colors) {
     const tiles: Tile[] = []
     for (const row of this.grid) {
@@ -129,6 +134,9 @@ export class Board {
       }
     }
     return tiles
+  }
+  public clear() {
+    this.initEmpty()
   }
   public toString() {
     let boardBuffer = `  ${Board.Cols.join('')}\n`
