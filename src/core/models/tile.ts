@@ -3,7 +3,10 @@ import { Board } from './board'
 import type { Piece } from './piece'
 
 export type TileName = `${Col}${Row}`
-export type TileShade = 'light' | 'dark'
+export enum TileShade {
+  LIGHT,
+  DARK,
+}
 
 export class Tile {
   public readonly row: number
@@ -51,7 +54,7 @@ export class Tile {
     this.rowName = Board.Rows[this.row]
     this.colName = Board.Cols[this.col]
     this.name = `${this.colName}${this.rowName}`
-    this.shade = (this.row + this.col) % 2 ? 'light' : 'dark'
+    this.shade = (this.row + this.col) % 2 ? TileShade.LIGHT : TileShade.DARK
   }
 
   public setPiece(piece: Piece | null) {

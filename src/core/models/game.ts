@@ -1,5 +1,6 @@
 import { Board } from './board'
-import type { Color, Piece } from './piece'
+import type { Piece } from './piece'
+import { Colors } from './piece'
 import type { Tile, TileName } from './tile'
 
 type GameStatus = 'ongoing' | 'w-win' | 'b-win' | 'stalemate'
@@ -24,10 +25,11 @@ export class Game {
     this.status = 'ongoing'
     this.history = []
   }
-  get turnColor(): Color {
-    return this.history.length % 2 ? 'black' : 'white'
+  get turnColor(): Colors {
+    return this.history.length % 2 ? Colors.BLACK : Colors.WHITE
   }
-  private getPseudoLegalMoves(from: Tile): Tile[] {
+
+  private getPseudoMoves(from: Tile): Tile[] {
     return from.piece?.getPseudoMoves(this.board, from) ?? []
   }
 
@@ -35,7 +37,7 @@ export class Game {
     const fromPiece = from.piece
     const moves: Tile[] = []
     if (!fromPiece) return moves
-    for (const to of this.getPseudoLegalMoves(from)) {
+    for (const to of this.getPseudoMoves(from)) {
       const undo = this.simulate(from, to)
       const safe = !this.isCheck(fromPiece.color)
       undo() // ALWAYS revert the simulation
@@ -44,7 +46,6 @@ export class Game {
     return moves
   }
 
-  
   public tryMove(from: Tile, to: Tile): boolean {
     const fromPiece = from.piece
     if (!fromPiece) return false
@@ -102,10 +103,10 @@ export class Game {
 
   private computeStatus() {}
 
-  public isCheck(color: Color) {
+  public isCheck(color: Colors) {
     const kingTile = this.board.getKingTile(color)
     const enemyTiles = this.board.getPlayerTiles(
-      color === 'white' ? 'black' : 'white',
+      color === Colors.WHITE ? Colors.BLACK : Colors.WHITE,
     )
     for (const enemy of enemyTiles) {
       if (!enemy.piece) continue // invalid state

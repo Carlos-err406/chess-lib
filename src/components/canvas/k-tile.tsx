@@ -18,14 +18,18 @@ export const KTile: FC<{
   onClick: () => void
 }> = ({ tile, onClick, highlightLegalMove = false }) => {
   const [hovering, setHovering] = useState(false)
+
   const strokeWidth =
     hovering || highlightLegalMove ? TILE_HOVER_STROKE_WIDTH : 0
+
   const strokeColor = highlightLegalMove
     ? TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR
     : TILE_STROKE_COLOR
+
   const x = tile.col * TILE_SIZE
   const y = (Board.Rows.length - 1 - tile.row) * TILE_SIZE // whites at the bottom
   const coord = { x, y }
+
   return (
     <Group
       onMouseEnter={() => setHovering(true)}

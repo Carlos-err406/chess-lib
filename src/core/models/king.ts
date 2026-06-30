@@ -1,3 +1,4 @@
+import type { Colors, MoveDelta } from './piece'
 import {
   MOVE_DIAG_DOWN_LEFT,
   MOVE_DIAG_DOWN_RIGHT,
@@ -7,26 +8,31 @@ import {
   MOVE_LEFT,
   MOVE_RIGHT,
   MOVE_UP,
+  MoveKinds,
   Piece,
 } from './piece'
-import type { Color, MoveDelta } from './piece'
-
-export const KING_DIRS: MoveDelta[] = [
-  MOVE_UP,
-  MOVE_LEFT,
-  MOVE_DOWN,
-  MOVE_RIGHT,
-  MOVE_DIAG_DOWN_LEFT,
-  MOVE_DIAG_DOWN_RIGHT,
-  MOVE_DIAG_UP_LEFT,
-  MOVE_DIAG_UP_RIGHT,
-]
 
 export class King extends Piece {
-  constructor(color: Color, moved = false) {
-    super({ color, key: 'k', moveType: 'jump', moveDeltas: KING_DIRS, moved })
+  public static MOVE_DELTAS: MoveDelta[] = [
+    MOVE_UP,
+    MOVE_LEFT,
+    MOVE_DOWN,
+    MOVE_RIGHT,
+    MOVE_DIAG_DOWN_LEFT,
+    MOVE_DIAG_DOWN_RIGHT,
+    MOVE_DIAG_UP_LEFT,
+    MOVE_DIAG_UP_RIGHT,
+  ]
+  constructor(color: Colors, moved = false) {
+    super({
+      color,
+      key: 'k',
+      moveKind: MoveKinds.JUMP,
+      moveDeltas: King.MOVE_DELTAS,
+      moved,
+    })
   }
   clone() {
-    return new King(this.color, this.moved)
+    return new King(this.color, this._moved)
   }
 }

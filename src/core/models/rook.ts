@@ -1,19 +1,31 @@
-import { MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, MOVE_UP, Piece } from './piece'
-import type { Color, MoveDelta } from './piece'
-
-export const ROOK_DIRS: MoveDelta[] = [
-  MOVE_UP,
+import type { Colors, MoveDelta } from './piece'
+import {
   MOVE_DOWN,
-  MOVE_RIGHT,
   MOVE_LEFT,
-]
+  MOVE_RIGHT,
+  MOVE_UP,
+  MoveKinds,
+  Piece,
+} from './piece'
 
 export class Rook extends Piece {
-  constructor(color: Color, moved = false) {
-    super({ color, key: 'r', moveType: 'slide', moveDeltas: ROOK_DIRS, moved })
+  public static MOVE_DELTAS: MoveDelta[] = [
+    MOVE_UP,
+    MOVE_DOWN,
+    MOVE_RIGHT,
+    MOVE_LEFT,
+  ]
+  constructor(color: Colors, moved = false) {
+    super({
+      color,
+      key: 'r',
+      moveKind: MoveKinds.SLIDE,
+      moveDeltas: Rook.MOVE_DELTAS,
+      moved,
+    })
   }
 
   clone() {
-    return new Rook(this.color, this.moved)
+    return new Rook(this.color, this._moved)
   }
 }

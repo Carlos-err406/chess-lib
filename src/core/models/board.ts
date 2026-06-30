@@ -2,7 +2,7 @@ import { Bishop } from './bishop'
 import { King } from './king'
 import { Knight } from './knight'
 import { Pawn } from './pawn'
-import type { Color, Piece } from './piece'
+import { Colors, type Piece } from './piece'
 import { Queen } from './queen'
 import { Rook } from './rook'
 import type { TileName } from './tile'
@@ -47,7 +47,6 @@ export class Board {
     '7',
     '8',
   ] as const
-
   private initEmpty() {
     // initialize the grid's dimensions
     this.grid = Array.from({ length: Board.Rows.length }, (_row, i) =>
@@ -68,8 +67,8 @@ export class Board {
     ] as const
 
     const layout = [
-      { color: 'white', backRow: '1', pawnRow: '2' },
-      { color: 'black', backRow: '8', pawnRow: '7' },
+      { color: Colors.WHITE, backRow: '1', pawnRow: '2' },
+      { color: Colors.BLACK, backRow: '8', pawnRow: '7' },
     ] as const
 
     for (const { color, backRow, pawnRow } of layout) {
@@ -94,29 +93,26 @@ export class Board {
   }
   public placePiece(piece: Piece | null, at: TileName): void {
     const t = new Tile(at)
-    this.grid[t.row][t.col].setPiece(piece) // you have [t.row][t.col] here — correct
+    this.grid[t.row][t.col].setPiece(piece)
   }
-
   public static isOnBoard(col: number, row: number): boolean {
     return (
       col >= 0 && col < Board.Cols.length && row >= 0 && row < Board.Rows.length
     )
   }
-
   public move(from: Tile, to: Tile) {
     const fromPiece = from.piece
     if (!fromPiece) return undefined
     const fromTile = this.tileAtName(from.name)
     const toTile = this.tileAtName(to.name)
     const captured = toTile.piece
-    const flippedMovedFlag = fromPiece.moved === false
-    fromPiece.moved = true
     toTile.setPiece(fromPiece)
     fromTile.setPiece(null)
+    const flippedMovedFlag = fromPiece.moved === false
+    fromPiece.moved = true
     return { captured, flippedMovedFlag }
   }
-
-  public getKingTile(color: Color) {
+  public getKingTile(color: Colors) {
     for (const row of this.grid) {
       for (const tile of row) {
         if (tile.piece instanceof King && tile.piece.color === color)
@@ -125,8 +121,7 @@ export class Board {
     }
     throw new Error(`Invalid game state ${color} King is not in the board`)
   }
-
-  public getPlayerTiles(color: Color) {
+  public getPlayerTiles(color: Colors) {
     const tiles: Tile[] = []
     for (const row of this.grid) {
       for (const tile of row) {
@@ -135,7 +130,6 @@ export class Board {
     }
     return tiles
   }
-
   public toString() {
     let boardBuffer = `  ${Board.Cols.join('')}\n`
     for (let i = this.grid.length - 1; i >= 0; i--) {

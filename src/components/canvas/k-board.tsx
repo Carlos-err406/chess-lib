@@ -13,6 +13,7 @@ export const KBoard: FC = () => {
   }>({ from: null, to: [] })
 
   const board = game.board
+
   const handleTileClick = (tile: Tile) => {
     // A selection is active → this click is either a move or a reselect/clear
     if (legalMoves.from) {
