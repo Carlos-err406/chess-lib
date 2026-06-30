@@ -1,9 +1,15 @@
+import type { Tile } from './board'
 import { Board } from './board'
 import type { Move } from './history'
-import { CastlingMove, GenericMove, History, PromotionMove } from './history'
-import { InPassantMove } from './history/in-passant-move'
+import {
+  CastlingMove,
+  GenericMove,
+  History,
+  InPassantMove,
+  PawnDoubleStepMove,
+  PromotionMove,
+} from './history'
 import { Colors, King, Pawn } from './pieces'
-import type { Tile } from './tile'
 
 export enum GameStatusKinds {
   ONGOING,
@@ -23,7 +29,7 @@ export class Game {
     this.status = GameStatusKinds.ONGOING
   }
 
-  get turnColor(): Colors {
+  public get turnColor(): Colors {
     return this.history.length % 2 ? Colors.BLACK : Colors.WHITE
   }
 
@@ -47,7 +53,10 @@ export class Game {
     const fromPiece = from.piece
     const moves: Tile[] = []
     if (!fromPiece) return moves
-    for (const to of this.getPseudoMoves(from)) {
+    const candidates = this.getPseudoMoves(from)
+    const enPassant = this.getEnPassantTarget(from)
+    if (enPassant) candidates.push(enPassant)
+    for (const to of candidates) {
       const undo = this.simulateMove(from, to)
       const safe = !this.isCheck(fromPiece.color)
       undo() // ALWAYS revert the simulation
@@ -84,7 +93,7 @@ export class Game {
   private simulateMove(from: Tile, to: Tile): () => void {
     const fromPiece = from.piece
     if (!fromPiece) return () => {}
-    const move = new GenericMove(from.name, to.name)
+    const move = this.buildMove(from, to)
     move.apply(this.board)
     return () => move.undo(this.board)
   }
@@ -114,7 +123,7 @@ export class Game {
     }
   }
 
-  private isCheck(color: Colors) {
+  public isCheck(color: Colors) {
     const kingTile = this.board.getKingTile(color)
     const enemyTiles = this.board.getPlayerTiles(
       color === Colors.WHITE ? Colors.BLACK : Colors.WHITE,
@@ -129,10 +138,16 @@ export class Game {
 
   private buildMove(from: Tile, to: Tile): Move {
     const piece = from.piece! // tryMove already verified non-null
-
-    // Promotion: a pawn reaching the last rank
-    if (piece instanceof Pawn && Board.isPromotionRank(to, piece.color)) {
-      return new PromotionMove(from.name, to.name) // TODO: Chosen piece
+    if (piece instanceof Pawn) {
+      if (Board.isPromotionRank(to, piece.color)) {
+        return new PromotionMove(from.name, to.name) // TODO: Chosen piece
+      }
+      if (from.col !== to.col && to.piece === null) {
+        return new InPassantMove(from.name, to.name)
+      }
+      if (Math.abs(to.row - from.row) === 2) {
+        return new PawnDoubleStepMove(from.name, to.name)
+      }
     }
 
     // Castling: a king moving two files
@@ -140,12 +155,19 @@ export class Game {
       return new CastlingMove(from.name, to.name)
     }
 
-    // En passant: a pawn moving diagonally to an EMPTY square
-    if (piece instanceof Pawn && from.col !== to.col && to.piece === null) {
-      return new InPassantMove(from.name, to.name)
-    }
-
     // Everything else (quiet move or normal capture)
     return new GenericMove(from.name, to.name)
+  }
+
+  private getEnPassantTarget(from: Tile): Tile | null {
+    const pawn = from.piece
+    if (!(pawn instanceof Pawn)) return null
+    const targetName = this.history.last?.enPassantTarget() ?? null
+    if (!targetName) return null
+    const target = this.board.tileAtName(targetName)
+
+    // target must be reachable by one of this pawn's diagonal capture deltas
+    const reachable = pawn.isCaptureSquare(from, target)
+    return reachable ? target : null
   }
 }

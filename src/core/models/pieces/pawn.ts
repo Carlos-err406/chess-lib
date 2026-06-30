@@ -1,5 +1,5 @@
 import type { Board } from '../board'
-import type { Tile } from '../tile'
+import type { Tile } from '../board/tile'
 import type { MoveDelta } from './piece'
 import {
   Colors,
@@ -30,7 +30,7 @@ export class Pawn extends Piece {
     MOVE_DIAG_DOWN_RIGHT,
   ]
 
-  protected captureDeltas: MoveDelta[]
+  private captureDeltas: MoveDelta[]
 
   constructor(color: Colors, moved = false) {
     super({ color, key: 'p', moveKind: MoveKinds.JUMP, moveDeltas: [], moved })
@@ -74,6 +74,13 @@ export class Pawn extends Piece {
         moves.push(board.tileAt(targetCol, targetRow))
     }
     return moves
+  }
+
+  public isCaptureSquare(from: Tile, to: Tile): boolean {
+    return this.captureDeltas.some(
+      ([dCol, dRow]) =>
+        from.col + dCol === to.col && from.row + dRow === to.row,
+    )
   }
 
   clone() {

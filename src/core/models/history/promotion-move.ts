@@ -1,6 +1,6 @@
 import type { Board } from '../board'
 import type { Piece } from '../pieces'
-import type { TileName } from '../tile'
+import type { TileName } from '../board/tile'
 import { Move } from './move'
 
 export class PromotionMove extends Move {

@@ -1,4 +1,4 @@
-import { TileShade } from '#/core/models/tile.ts'
+import { TileShade } from '#/core/models/board/tile.ts'
 
 export const TILE_SIZE = 100
 export const TILE_STROKE_COLOR = '#666'

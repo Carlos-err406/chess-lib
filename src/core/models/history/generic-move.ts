@@ -1,16 +1,16 @@
 import type { Board } from '../board'
 import type { Piece } from '../pieces'
-import type { TileName } from '../tile'
+import type { TileName } from '../board/tile'
 import { Move } from './move'
 
 export class GenericMove extends Move {
-  private captured: Piece | null = null
-  private movedPiece: Piece | null = null
-  private flippedMovedFlag = false
+  protected captured: Piece | null = null
+  protected movedPiece: Piece | null = null
+  protected flippedMovedFlag = false
 
   constructor(
-    private from: TileName,
-    private to: TileName,
+    protected from: TileName,
+    protected to: TileName,
   ) {
     super()
   }

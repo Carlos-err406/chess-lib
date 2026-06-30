@@ -1,7 +1,7 @@
-import type { Piece } from './pieces'
-import { Bishop, Colors, King, Knight, Pawn, Queen, Rook } from './pieces'
-import type { TileName } from './tile'
-import { Tile } from './tile'
+import type { Piece } from '../pieces'
+import { Bishop, Colors, King, Knight, Pawn, Queen, Rook } from '../pieces'
+import type { TileName } from '../board/tile'
+import { Tile } from '../board/tile'
 
 export type Row = (typeof Board.Rows)[number]
 export type Col = (typeof Board.Cols)[number]

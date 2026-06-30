@@ -1,5 +1,5 @@
-import { Board } from '#/core/models/board.ts'
-import type { Tile } from '#/core/models/tile.ts'
+import { Board } from '#/core/models/board/board.ts'
+import type { Tile } from '#/core/models/board/tile.ts'
 import type { FC } from 'react'
 import { useState } from 'react'
 import { Group, Rect } from 'react-konva'

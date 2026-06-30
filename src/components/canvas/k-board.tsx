@@ -1,5 +1,5 @@
-import { Board } from '#/core/models/board.ts'
-import type { Tile } from '#/core/models/tile.ts'
+import type { Tile } from '#/core/models/board'
+import { Board } from '#/core/models/board'
 import { game } from '#/state/game-state.ts'
 import type { FC } from 'react'
 import { useState } from 'react'
