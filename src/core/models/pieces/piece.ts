@@ -46,6 +46,8 @@ type PieceConstructorOpts = {
 }
 
 export abstract class Piece {
+  private static counter = 0
+  readonly id: number // stable identity per physical piece (used as a render key)
   readonly key: string
   readonly assetUrl: string
   readonly moveType: MoveKinds
@@ -60,6 +62,7 @@ export abstract class Piece {
     moveDeltas,
     moved = false,
   }: PieceConstructorOpts) {
+    this.id = Piece.counter++
     this.color = color
     this.moveType = moveType
     this.moveDeltas = moveDeltas
@@ -117,4 +120,7 @@ export abstract class Piece {
   }
 
   public abstract clone(): Piece
+  public toString() {
+    return this.key
+  }
 }

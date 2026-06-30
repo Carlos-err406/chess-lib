@@ -1,7 +1,7 @@
-import type { Piece } from '../pieces'
-import { Bishop, Colors, King, Knight, Pawn, Queen, Rook } from '../pieces'
 import type { TileName } from '../board/tile'
 import { Tile } from '../board/tile'
+import type { Piece } from '../pieces'
+import { Bishop, Colors, King, Knight, Pawn, Queen, Rook } from '../pieces'
 
 export type Row = (typeof Board.Rows)[number]
 export type Col = (typeof Board.Cols)[number]
@@ -132,9 +132,21 @@ export class Board {
     }
     return tiles
   }
+
+  public getTilesWithPieces() {
+    const tiles: Tile[] = []
+    for (const row of this.grid) {
+      for (const tile of row) {
+        if (tile.piece) tiles.push(tile)
+      }
+    }
+    return tiles
+  }
+
   public clear() {
     this.initEmpty()
   }
+
   public toString() {
     let boardBuffer = `  ${Board.Cols.join('')}\n`
     for (let i = this.grid.length - 1; i >= 0; i--) {

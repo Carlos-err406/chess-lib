@@ -1,10 +1,17 @@
-import type { ComponentProps, FC } from 'react'
-import { Image } from 'react-konva'
+import type Konva from 'konva'
+import type { ComponentProps } from 'react'
+import { forwardRef } from 'react'
+import { Group, Image as ImageComponent } from 'react-konva'
 import useImage from 'use-image'
 
-export const URLImage: FC<
-  { src: string } & Omit<ComponentProps<typeof Image>, 'image'>
-> = ({ src, ...rest }) => {
+export const URLImage = forwardRef<
+  Konva.Image,
+  { src: string } & Omit<ComponentProps<typeof ImageComponent>, 'image'>
+>(({ src, ...rest }, ref) => {
   const [image] = useImage(src, 'anonymous')
-  return <Image image={image} {...rest} />
-}
+  return (
+    <Group>
+      <ImageComponent ref={ref} image={image} {...rest} />
+    </Group>
+  )
+})

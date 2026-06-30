@@ -1,4 +1,5 @@
 import { TileShade } from '#/core/models/board/tile.ts'
+import Konva from 'konva'
 
 export const TILE_SIZE = 100
 export const TILE_STROKE_COLOR = '#666'
@@ -11,3 +12,6 @@ export const TILE_COLOR = {
 
 export const ASSET_STYLE = 'default'
 export const ASSET_PIECE_BASE_URL = '/assets/pieces'
+
+export const PIECE_MOVE_DURATION = .4 // seconds, straight-line slide
+export const PIECE_MOVE_EASING = Konva.Easings.BackEaseOut

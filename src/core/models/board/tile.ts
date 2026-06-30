@@ -1,6 +1,6 @@
+import type { Piece } from '../pieces'
 import type { Col, Row } from './board'
 import { Board } from './board'
-import type { Piece } from './pieces'
 
 export type TileName = `${Col}${Row}`
 export enum TileShade {
@@ -94,5 +94,8 @@ export class Tile {
       throw new Error(`Invalid tile coordinates (col:${col}, row: ${row})`)
     }
     return [col, row]
+  }
+  public toString() {
+    return this.name
   }
 }

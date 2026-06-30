@@ -1,4 +1,3 @@
-import { Board } from '#/core/models/board/board.ts'
 import type { Tile } from '#/core/models/board/tile.ts'
 import type { FC } from 'react'
 import { useState } from 'react'
@@ -10,7 +9,7 @@ import {
   TILE_SIZE,
   TILE_STROKE_COLOR,
 } from './conf'
-import { KPiece } from './k-piece'
+import { getTileCoords } from './helpers'
 
 export const KTile: FC<{
   tile: Tile
@@ -18,17 +17,13 @@ export const KTile: FC<{
   onClick: () => void
 }> = ({ tile, onClick, highlightLegalMove = false }) => {
   const [hovering, setHovering] = useState(false)
-
   const strokeWidth =
     hovering || highlightLegalMove ? TILE_HOVER_STROKE_WIDTH : 0
 
   const strokeColor = highlightLegalMove
     ? TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR
     : TILE_STROKE_COLOR
-
-  const x = tile.col * TILE_SIZE + TILE_SIZE / 2
-  const y = (Board.Rows.length - 1 - tile.row) * TILE_SIZE + TILE_SIZE / 2 // whites at the bottom
-  const coord = { x, y }
+  const { x, y } = getTileCoords(tile)
 
   return (
     <Group
@@ -45,7 +40,6 @@ export const KTile: FC<{
         stroke={strokeColor}
         strokeWidth={strokeWidth}
       />
-      {tile.piece && <KPiece {...{ piece: tile.piece, coord }} />}
     </Group>
   )
 }
