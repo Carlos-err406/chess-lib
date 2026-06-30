@@ -26,8 +26,8 @@ export const KTile: FC<{
     ? TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR
     : TILE_STROKE_COLOR
 
-  const x = tile.col * TILE_SIZE
-  const y = (Board.Rows.length - 1 - tile.row) * TILE_SIZE // whites at the bottom
+  const x = tile.col * TILE_SIZE + TILE_SIZE / 2
+  const y = (Board.Rows.length - 1 - tile.row) * TILE_SIZE + TILE_SIZE / 2 // whites at the bottom
   const coord = { x, y }
 
   return (

@@ -12,10 +12,10 @@ export const Route = createFileRoute('/')({
 })
 function Home() {
   return (
-    <div className="flex items-center justify-center h-screen w-screen">
+    <div className="flex items-center justify-start h-screen w-screen overflow-clip">
       <Stage
-        height={TILE_SIZE * 8}
-        width={TILE_SIZE * 8}
+        height={TILE_SIZE * 9}
+        width={TILE_SIZE * 9}
         className="shadow-[0_0_10px_10px_#0000001a]"
       >
         <KBoard />

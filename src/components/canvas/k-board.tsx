@@ -1,9 +1,11 @@
-import type { Tile } from '#/core/models/board'
+import type { Col, Row, Tile } from '#/core/models/board'
 import { Board } from '#/core/models/board'
 import { game } from '#/state/game-state.ts'
 import type { FC } from 'react'
 import { useState } from 'react'
 import { Layer } from 'react-konva'
+import { KBoardLetters } from './k-board-letters'
+import { KBoardNumbers } from './k-board-numbers'
 import { KTile } from './k-tile'
 
 export const KBoard: FC = () => {
@@ -11,8 +13,6 @@ export const KBoard: FC = () => {
     from: Tile | null
     to: Tile[]
   }>({ from: null, to: [] })
-
-  const board = game.board
 
   const handleTileClick = (tile: Tile) => {
     // A selection is active → this click is either a move or a reselect/clear
@@ -36,22 +36,28 @@ export const KBoard: FC = () => {
     setLegalMoves({ from: null, to: [] })
   }
 
+  const renderBoard = () =>
+    Board.Rows.map((rowNumber: Row) =>
+      Board.Cols.map((col) => renderTile(col, rowNumber)),
+    )
+
+  const renderTile = (col: Col, row: Row) => {
+    const tile = game.board.tileAtParts(col, row)
+    const highlightLegalMove = legalMoves.to.some((move) => move == tile)
+    return (
+      <KTile
+        key={`tile-${col}${row}`}
+        tile={tile}
+        onClick={() => handleTileClick(tile)}
+        highlightLegalMove={highlightLegalMove}
+      />
+    )
+  }
   return (
     <Layer>
-      {Board.Rows.map((row) =>
-        Board.Cols.map((col) => {
-          const tile = board.tileAtParts(col, row)
-          const highlightLegalMove = legalMoves.to.some((move) => move == tile)
-          return (
-            <KTile
-              key={`tile-${col}${row}`}
-              tile={tile}
-              onClick={() => handleTileClick(tile)}
-              highlightLegalMove={highlightLegalMove}
-            />
-          )
-        }),
-      )}
+      {renderBoard()}
+      <KBoardLetters />
+      <KBoardNumbers />
     </Layer>
   )
 }
