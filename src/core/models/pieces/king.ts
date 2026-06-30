@@ -1,4 +1,4 @@
-import type { Colors, MoveDelta } from './piece'
+import type { Colors, MoveDelta } from '../pieces/piece'
 import {
   MOVE_DIAG_DOWN_LEFT,
   MOVE_DIAG_DOWN_RIGHT,
@@ -10,7 +10,7 @@ import {
   MOVE_UP,
   MoveKinds,
   Piece,
-} from './piece'
+} from '../pieces/piece'
 
 export class King extends Piece {
   public static MOVE_DELTAS: MoveDelta[] = [

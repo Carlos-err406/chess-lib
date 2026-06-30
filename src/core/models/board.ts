@@ -1,18 +1,15 @@
-import { Bishop } from './bishop'
-import { King } from './king'
-import { Knight } from './knight'
-import { Pawn } from './pawn'
-import type { Piece } from './piece'
-import { Colors } from './piece'
-import { Queen } from './queen'
-import { Rook } from './rook'
+import type { Piece } from './pieces'
+import { Bishop, Colors, King, Knight, Pawn, Queen, Rook } from './pieces'
 import type { TileName } from './tile'
 import { Tile } from './tile'
 
 export type Row = (typeof Board.Rows)[number]
 export type Col = (typeof Board.Cols)[number]
+
 export class Board {
   private grid: Tile[][] = []
+  public static readonly WHITE_BACK_RANK: Row = '1'
+  public static readonly BLACK_BACK_RANK: Row = '8'
 
   constructor(board?: Board) {
     if (!board) {
@@ -100,17 +97,17 @@ export class Board {
       col >= 0 && col < Board.Cols.length && row >= 0 && row < Board.Rows.length
     )
   }
-  public move(from: Tile, to: Tile) {
-    const fromPiece = from.piece
+  public move(from: TileName, to: TileName) {
+    const fromTile = this.tileAtName(from)
+    const toTile = this.tileAtName(to)
+    const fromPiece = fromTile.piece
     if (!fromPiece) return undefined
-    const fromTile = this.tileAtName(from.name)
-    const toTile = this.tileAtName(to.name)
     const captured = toTile.piece
     toTile.setPiece(fromPiece)
     fromTile.setPiece(null)
     const flippedMovedFlag = fromPiece.moved === false
     fromPiece.moved = true
-    return { captured, flippedMovedFlag }
+    return { captured, flippedMovedFlag, movedPiece: fromPiece }
   }
   public getKingTile<T extends boolean = false>(
     color: Colors,
@@ -149,5 +146,15 @@ export class Board {
       boardBuffer += rowBuffer + '\n'
     }
     return boardBuffer
+  }
+
+  public static isBackRank(tile: Tile, color: Colors): boolean {
+    if (color === Colors.WHITE) return tile.rowName === Board.WHITE_BACK_RANK
+    else return tile.rowName === Board.BLACK_BACK_RANK
+  }
+  /** opposite of Board.isBackRank based on the color */
+  public static isPromotionRank(tile: Tile, color: Colors): boolean {
+    if (color === Colors.WHITE) return tile.rowName === Board.BLACK_BACK_RANK
+    else return tile.rowName === Board.WHITE_BACK_RANK
   }
 }

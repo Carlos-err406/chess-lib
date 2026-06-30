@@ -1,4 +1,5 @@
-import type { Board } from './board'
+import type { Board } from '../board'
+import type { Tile } from '../tile'
 import type { MoveDelta } from './piece'
 import {
   Colors,
@@ -14,7 +15,6 @@ import {
   Piece,
   TileKinds,
 } from './piece'
-import type { Tile } from './tile'
 
 export class Pawn extends Piece {
   public static WHITE_MOVE_DELTAS: MoveDelta[] = [MOVE_UP]

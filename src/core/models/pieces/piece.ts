@@ -1,6 +1,6 @@
 import { ASSET_PIECE_BASE_URL, ASSET_STYLE } from '#/components/canvas/conf.ts'
-import { Board } from './board'
-import type { Tile } from './tile'
+import { Board } from '../board'
+import type { Tile } from '../tile'
 
 export enum Colors {
   WHITE,

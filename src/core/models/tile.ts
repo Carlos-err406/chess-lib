@@ -1,6 +1,6 @@
 import type { Col, Row } from './board'
 import { Board } from './board'
-import type { Piece } from './piece'
+import type { Piece } from './pieces'
 
 export type TileName = `${Col}${Row}`
 export enum TileShade {

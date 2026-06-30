@@ -1,7 +1,9 @@
 import { Board } from './board'
-import type { Piece } from './piece'
-import { Colors } from './piece'
-import type { Tile, TileName } from './tile'
+import type { Move } from './history'
+import { CastlingMove, GenericMove, History, PromotionMove } from './history'
+import { InPassantMove } from './history/in-passant-move'
+import { Colors, King, Pawn } from './pieces'
+import type { Tile } from './tile'
 
 export enum GameStatusKinds {
   ONGOING,
@@ -10,39 +12,33 @@ export enum GameStatusKinds {
   STALEMATE,
 }
 
-type Move = {
-  piece: Piece
-  flippedMovedFlag: boolean // was this the piece's first move?
-  from: TileName
-  to: TileName
-  captured: Piece | null // for undo + capture history
-}
-
 export class Game {
   board: Board
-  history: Move[]
-  private redoStack: Move[] = []
-
+  history: History
   #status!: GameStatusKinds
 
-  public get status() {
-    return this.#status
-  }
-  private set status(value: GameStatusKinds) {
-    this.#status = value
-  }
   constructor() {
     this.board = new Board()
+    this.history = new History()
     this.status = GameStatusKinds.ONGOING
-    this.history = []
   }
+
   get turnColor(): Colors {
     return this.history.length % 2 ? Colors.BLACK : Colors.WHITE
   }
 
-  public clearBoard(){
+  public get status() {
+    return this.#status
+  }
+
+  private set status(value: GameStatusKinds) {
+    this.#status = value
+  }
+
+  public clearBoard() {
     this.board.clear()
   }
+
   private getPseudoMoves(from: Tile): Tile[] {
     return from.piece?.getPseudoMoves(this.board, from) ?? []
   }
@@ -52,7 +48,7 @@ export class Game {
     const moves: Tile[] = []
     if (!fromPiece) return moves
     for (const to of this.getPseudoMoves(from)) {
-      const undo = this.simulate(from, to)
+      const undo = this.simulateMove(from, to)
       const safe = !this.isCheck(fromPiece.color)
       undo() // ALWAYS revert the simulation
       if (safe) moves.push(to) // record legality AFTER reverting
@@ -60,62 +56,37 @@ export class Game {
     return moves
   }
 
-  public tryMove(from: Tile, to: Tile): boolean {
+  public tryMove(from: Tile, to: Tile) {
     const fromPiece = from.piece
-    if (!fromPiece) return false
-    if (fromPiece.color !== this.turnColor) return false
-    if (!this.getLegalMoves(from).includes(to)) return false
-    const result = this.board.move(from, to)
-    if (!result) return false
-    const { captured, flippedMovedFlag } = result
-    this.history.push({
-      captured,
-      from: from.name,
-      to: to.name,
-      piece: fromPiece,
-      flippedMovedFlag,
-    })
-    this.redoStack = []
+    if (!fromPiece) return
+    if (fromPiece.color !== this.turnColor) return
+    if (!this.getLegalMoves(from).includes(to)) return
+
+    const move = this.buildMove(from, to)
+    move.apply(this.board)
+
+    this.history.push(move)
     this.computeStatus()
-    return true
   }
 
-  public undo(simulated = false) {
-    const move = this.history.pop()
-    if (!move) return
-    const { captured, from, piece, to } = move
-    const fromTile = this.board.tileAtName(from)
-    const toTile = this.board.tileAtName(to)
-    toTile.setPiece(captured)
-    piece.moved = !move.flippedMovedFlag
-    fromTile.setPiece(piece)
-    if (!simulated) {
-      this.redoStack.push(move)
-      this.computeStatus()
-    }
+  public undo() {
+    const move = this.history.undo(this.board)
+    if (move) this.computeStatus()
     return move
   }
 
   public redo() {
-    const move = this.redoStack.pop()
-    if (!move) return
-    const fromTile = this.board.tileAtName(move.from)
-    const toTile = this.board.tileAtName(move.to)
-    this.board.move(fromTile, toTile) // replay the mutation directly, no re-validation
-    this.history.push(move)
-    this.computeStatus()
+    const move = this.history.redo(this.board)
+    if (move) this.computeStatus()
     return move
   }
 
-  private simulate(from: Tile, to: Tile): () => void {
-    const movedPiece = from.piece // capture BEFORE the move mutates anything
-    const res = this.board.move(from, to)
-    if (!res || !movedPiece) return () => {}
-    return () => {
-      to.setPiece(res.captured) // destination ← captured piece (or null)
-      movedPiece.moved = !res.flippedMovedFlag // restore the mover's moved flag
-      from.setPiece(movedPiece) // origin ← the mover
-    }
+  private simulateMove(from: Tile, to: Tile): () => void {
+    const fromPiece = from.piece
+    if (!fromPiece) return () => {}
+    const move = new GenericMove(from.name, to.name)
+    move.apply(this.board)
+    return () => move.undo(this.board)
   }
 
   private computeStatus() {
@@ -143,7 +114,7 @@ export class Game {
     }
   }
 
-  public isCheck(color: Colors) {
+  private isCheck(color: Colors) {
     const kingTile = this.board.getKingTile(color)
     const enemyTiles = this.board.getPlayerTiles(
       color === Colors.WHITE ? Colors.BLACK : Colors.WHITE,
@@ -154,5 +125,27 @@ export class Game {
       if (pseudoLegalMoves.includes(kingTile)) return true
     }
     return false
+  }
+
+  private buildMove(from: Tile, to: Tile): Move {
+    const piece = from.piece! // tryMove already verified non-null
+
+    // Promotion: a pawn reaching the last rank
+    if (piece instanceof Pawn && Board.isPromotionRank(to, piece.color)) {
+      return new PromotionMove(from.name, to.name) // TODO: Chosen piece
+    }
+
+    // Castling: a king moving two files
+    if (piece instanceof King && Math.abs(to.col - from.col) === 2) {
+      return new CastlingMove(from.name, to.name)
+    }
+
+    // En passant: a pawn moving diagonally to an EMPTY square
+    if (piece instanceof Pawn && from.col !== to.col && to.piece === null) {
+      return new InPassantMove(from.name, to.name)
+    }
+
+    // Everything else (quiet move or normal capture)
+    return new GenericMove(from.name, to.name)
   }
 }
