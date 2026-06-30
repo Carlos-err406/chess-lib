@@ -1,5 +1,5 @@
-import type { Tile } from './board'
-import { Board } from './board'
+import type { Col } from './board'
+import { Board, Tile } from './board'
 import type { Move } from './history'
 import {
   CastlingMove,
@@ -9,7 +9,7 @@ import {
   PawnDoubleStepMove,
   PromotionMove,
 } from './history'
-import { Colors, King, Pawn } from './pieces'
+import { Colors, King, Pawn, Rook } from './pieces'
 
 export enum GameStatusKinds {
   ONGOING,
@@ -56,6 +56,8 @@ export class Game {
     const candidates = this.getPseudoMoves(from)
     const enPassant = this.getEnPassantTarget(from)
     if (enPassant) candidates.push(enPassant)
+    candidates.push(...this.getCastlingTargets(from))
+
     for (const to of candidates) {
       const undo = this.simulateMove(from, to)
       const safe = !this.isCheck(fromPiece.color)
@@ -123,17 +125,11 @@ export class Game {
     }
   }
 
-  public isCheck(color: Colors) {
-    const kingTile = this.board.getKingTile(color)
-    const enemyTiles = this.board.getPlayerTiles(
-      color === Colors.WHITE ? Colors.BLACK : Colors.WHITE,
+  public isCheck(color: Colors): boolean {
+    return this.isSquareAttacked(
+      this.board.getKingTile(color),
+      Game.enemyOf(color),
     )
-    for (const enemy of enemyTiles) {
-      if (!enemy.piece) continue // invalid state
-      const pseudoLegalMoves = enemy.piece.getPseudoMoves(this.board, enemy)
-      if (pseudoLegalMoves.includes(kingTile)) return true
-    }
-    return false
   }
 
   private buildMove(from: Tile, to: Tile): Move {
@@ -169,5 +165,82 @@ export class Game {
     // target must be reachable by one of this pawn's diagonal capture deltas
     const reachable = pawn.isCaptureSquare(from, target)
     return reachable ? target : null
+  }
+  private getCastlingTargets(from: Tile): Tile[] {
+    const king = from.piece
+    const kingRank = from.rowName // 1 | 8
+    if (!(king instanceof King) || king.moved) return []
+    const enemy = Game.enemyOf(king.color)
+    // cant castle if king is under attack (check)
+    if (this.isSquareAttacked(from, enemy)) return []
+
+    const targets: Tile[] = []
+
+    const file = (col: Col) => new Tile(col, kingRank) // column factory helper
+
+    // kingside: rook H, squares F+G empty, king crosses F to G
+    const kingSideTarget = this.tryCastleSide(enemy, {
+      rookSq: file('H'),
+      emptySquares: [file('F'), file('G')],
+      kingPath: [file('F'), file('G')], // crossed + destination, both must be safe
+    })
+    if (kingSideTarget) targets.push(kingSideTarget)
+
+    // queenside: rook A, squares B+C+D empty, king crosses D to C
+    const queenSideTarget = this.tryCastleSide(enemy, {
+      rookSq: file('A'),
+      emptySquares: [file('B'), file('C'), file('D')], // 3 empty (B included!)
+      kingPath: [file('D'), file('C')], // king only crosses D,C — NOT B
+    })
+    if (queenSideTarget) targets.push(queenSideTarget)
+
+    return targets
+  }
+
+  private tryCastleSide(
+    enemy: Colors,
+    spec: {
+      rookSq: Tile
+      emptySquares: Tile[]
+      kingPath: Tile[]
+    },
+  ) {
+    const rookTile = this.board.tileAtName(spec.rookSq.name)
+    const rook = rookTile.piece
+    // if the rook didnt move;
+    if (!(rook instanceof Rook) || rook.moved) return
+
+    // and all squares between king and rook are empty;
+    if (
+      spec.emptySquares.some(
+        (sq) => this.board.tileAtName(sq.name).piece !== null,
+      )
+    )
+      return
+
+    // and the king's path is not under attack (path includes the destination);
+    if (
+      spec.kingPath.some((sq) =>
+        this.isSquareAttacked(this.board.tileAtName(sq.name), enemy),
+      )
+    )
+      return
+
+    // then the king can castle
+    return this.board.tileAtName(spec.kingPath.at(-1)!.name)
+  }
+
+  private isSquareAttacked(tile: Tile, byColor: Colors): boolean {
+    for (const enemy of this.board.getPlayerTiles(byColor)) {
+      if (!enemy.piece) continue
+      if (enemy.piece.getPseudoMoves(this.board, enemy).includes(tile))
+        return true
+    }
+    return false
+  }
+
+  public static enemyOf(color: Colors) {
+    if (color === Colors.WHITE) return Colors.BLACK
+    else return Colors.WHITE
   }
 }
