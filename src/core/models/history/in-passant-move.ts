@@ -8,11 +8,8 @@ export class InPassantMove extends Move {
   private capturedPiece: Piece | null = null
   private capturedSquare: TileName | null = null
   private flippedMovedFlag = false
-  constructor(
-    private from: TileName,
-    private to: TileName,
-  ) {
-    super()
+  constructor(from: TileName, to: TileName) {
+    super(from, to)
   }
 
   apply(board: Board) {

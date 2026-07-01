@@ -8,11 +8,8 @@ export class CastlingMove extends Move {
   private kingMove!: GenericMove
   private rookMove!: GenericMove
 
-  constructor(
-    private from: TileName,
-    private to: TileName,
-  ) {
-    super()
+  constructor(from: TileName, to: TileName) {
+    super(from, to)
   }
 
   apply(board: Board) {

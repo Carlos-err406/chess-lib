@@ -4,6 +4,10 @@ import type { Colors } from '../pieces'
 export abstract class Move {
   abstract apply(board: Board): void
   abstract undo(board: Board): void
+  constructor(
+    protected from: TileName,
+    protected to: TileName,
+  ) {}
 
   abstract get metadata(): {
     from: TileName

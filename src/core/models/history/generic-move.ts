@@ -8,11 +8,8 @@ export class GenericMove extends Move {
   protected movedPiece: Piece | null = null
   protected flippedMovedFlag = false
 
-  constructor(
-    protected from: TileName,
-    protected to: TileName,
-  ) {
-    super()
+  constructor(from: TileName, to: TileName) {
+    super(from, to)
   }
 
   apply(board: Board) {

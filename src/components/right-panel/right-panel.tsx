@@ -1,8 +1,8 @@
-import type { FC } from 'react'
-import { HistorySection } from './history-section'
-import { CapturesSection } from './captures-section'
 import { Colors } from '#/core/models/pieces/index.ts'
 import { useGame } from '#/state/use-game.ts'
+import type { FC } from 'react'
+import { CapturesSection } from './captures-section'
+import { HistorySection } from './history-section'
 
 export const RightPanel: FC = () => {
   const game = useGame()
@@ -27,7 +27,7 @@ export const RightPanel: FC = () => {
         <CapturesSection
           assets={capturedAssets[Colors.WHITE]}
           material={whiteMaterial}
-        />{' '}
+        />
       </div>
     </div>
   )

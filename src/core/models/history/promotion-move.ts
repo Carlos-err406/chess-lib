@@ -8,11 +8,8 @@ export class PromotionMove extends Move {
   private movedPiece: Piece | null = null
   private flippedMovedFlag = false
 
-  constructor(
-    private from: TileName,
-    private to: TileName,
-  ) {
-    super()
+  constructor(from: TileName, to: TileName) {
+    super(from, to)
   }
 
   apply(board: Board) {
