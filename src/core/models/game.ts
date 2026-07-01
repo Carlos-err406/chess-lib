@@ -137,7 +137,7 @@ export class Game {
     const piece = from.piece! // tryMove already verified non-null
     if (piece instanceof Pawn) {
       if (Board.isPromotionRank(to, piece.color)) {
-        return new PromotionMove(from.name, to.name) // TODO: Chosen piece
+        return new PromotionMove(from.name, to.name, 'Queen') // TODO: Chosen piece
       }
       if (from.col !== to.col && to.piece === null) {
         return new InPassantMove(from.name, to.name)

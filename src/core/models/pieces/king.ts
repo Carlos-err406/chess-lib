@@ -24,7 +24,7 @@ export class King extends Piece {
     MOVE_DIAG_UP_RIGHT,
   ]
   public static VALUE = Infinity
-  constructor(color: Colors, moved = false) {
+  constructor(color: Colors, moved = false, id?: number) {
     super({
       color,
       key: 'k',
@@ -32,6 +32,7 @@ export class King extends Piece {
       moveDeltas: King.MOVE_DELTAS,
       moved,
       value: King.VALUE,
+      id,
     })
   }
   clone() {

@@ -44,6 +44,7 @@ type PieceConstructorOpts = {
   moveDeltas: MoveDelta[]
   moved?: boolean
   value: number
+  id?: number
 }
 
 export abstract class Piece {
@@ -64,19 +65,22 @@ export abstract class Piece {
     moveDeltas,
     value,
     moved = false,
+    id,
   }: PieceConstructorOpts) {
-    this.id = Piece.counter++
+    this.id = id ?? Piece.counter++
     this.color = color
     this.moveType = moveType
     this.moveDeltas = moveDeltas
     this.moved = moved
     this.key = color === Colors.WHITE ? key.toUpperCase() : key.toLowerCase()
-    const assetName = this.constructor.name.toLowerCase()
-    const assetColorSuffix = color === Colors.WHITE ? 'w' : 'b'
-    this.assetUrl = `${ASSET_PIECE_BASE_URL}/${ASSET_STYLE}/${assetName}-${assetColorSuffix}.svg`
+    const assetName = this.constructor.name
+    this.assetUrl = Piece.getAssetUrl(this.color, assetName)
     this.value = value
   }
-
+  public static getAssetUrl(color: Colors, pieceName: string) {
+    const assetColorSuffix = color === Colors.WHITE ? 'w' : 'b'
+    return `${ASSET_PIECE_BASE_URL}/${ASSET_STYLE}/${pieceName.toLowerCase()}-${assetColorSuffix}.svg`
+  }
   protected classifyTile(board: Board, col: number, row: number): TileKinds {
     if (!Board.isOnBoard(col, row)) return TileKinds.OFF_BOARD
     const piece = board.tileAt(col, row).piece // safe now — bounds already checked

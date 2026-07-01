@@ -24,7 +24,7 @@ export class Knight extends Piece {
     MOVE_L_RIGHT_UP,
   ]
   public static VALUE = 3
-  constructor(color: Colors, moved = false) {
+  constructor(color: Colors, moved = false, id?: number) {
     super({
       color,
       key: 'n',
@@ -32,6 +32,7 @@ export class Knight extends Piece {
       moveDeltas: Knight.MOVE_DELTAS,
       moved,
       value: Knight.VALUE,
+      id,
     })
   }
   clone() {

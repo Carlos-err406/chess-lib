@@ -1,5 +1,6 @@
-import type { Board, TileName } from '../board'
-import type { Colors } from '../pieces'
+import type { Board, TileName } from '../board';
+import type { Colors } from '../pieces';
+import type { PromotionMove } from './promotion-move';
 
 export abstract class Move {
   abstract apply(board: Board): void
@@ -19,6 +20,7 @@ export abstract class Move {
     capturedPieceAsset?: string
     capturedPieceName?: string
     capturedPieceValue?: number
+    promotedTo?: keyof typeof PromotionMove.PROMOTION_PIECES
   }[]
 
   public enPassantTarget(): TileName | null {

@@ -33,7 +33,7 @@ export class Pawn extends Piece {
   public static VALUE = 1
   private captureDeltas: MoveDelta[]
 
-  constructor(color: Colors, moved = false) {
+  constructor(color: Colors, moved = false, id?: number) {
     super({
       color,
       key: 'p',
@@ -41,6 +41,7 @@ export class Pawn extends Piece {
       moveDeltas: [],
       moved,
       value: Pawn.VALUE,
+      id,
     })
     if (this.color === Colors.WHITE)
       this.captureDeltas = Pawn.WHITE_CAPTURE_DELTAS

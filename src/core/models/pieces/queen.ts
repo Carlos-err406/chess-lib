@@ -24,7 +24,7 @@ export class Queen extends Piece {
     MOVE_DIAG_UP_RIGHT,
   ]
   public static VALUE = 9
-  constructor(color: Colors, moved = false) {
+  constructor(color: Colors, moved = false, id?: number) {
     super({
       color,
       key: 'q',
@@ -32,6 +32,7 @@ export class Queen extends Piece {
       moveDeltas: Queen.MOVE_DELTAS,
       moved,
       value: Queen.VALUE,
+      id,
     })
   }
 

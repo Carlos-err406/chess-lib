@@ -16,7 +16,7 @@ export class Bishop extends Piece {
     MOVE_DIAG_UP_RIGHT,
   ]
   public static VALUE = 3
-  constructor(color: Colors, moved = false) {
+  constructor(color: Colors, moved = false, id?: number) {
     super({
       color,
       key: 'b',
@@ -24,6 +24,7 @@ export class Bishop extends Piece {
       moveDeltas: Bishop.MOVE_DELTAS,
       moved,
       value: Bishop.VALUE,
+      id,
     })
   }
   clone() {
