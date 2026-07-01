@@ -24,7 +24,7 @@ export const KPiece: FC<{ piece: Piece; coord: Vector2d }> = ({
       x: coord.x,
       y: coord.y,
       duration: PIECE_MOVE_DURATION,
-      easing: PIECE_MOVE_EASING, // constant-speed straight line
+      easing: PIECE_MOVE_EASING,
     })
     drawnAt.current = coord
   }, [coord.x, coord.y])

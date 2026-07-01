@@ -1,6 +1,7 @@
 import type { Col, Row, Tile } from '#/core/models/board';
 import { Board } from '#/core/models/board';
-import { game } from '#/state/game-state.ts';
+import { gameStore } from '#/state/game-state.ts';
+import { useGame } from '#/state/use-game.ts';
 import type { FC } from 'react';
 import { useState } from 'react';
 import { Layer } from 'react-konva';
@@ -10,6 +11,7 @@ import { KPieces } from './k-pieces';
 import { KTile } from './k-tile';
 
 export const KBoard: FC = () => {
+  const game = useGame()
   const [legalMoves, setLegalMoves] = useState<{
     from: Tile | null
     to: Tile[]
@@ -20,7 +22,7 @@ export const KBoard: FC = () => {
     if (legalMoves.from) {
       // clicked a legal target → attempt the move
       if (legalMoves.to.includes(tile)) {
-        game.tryMove(legalMoves.from, tile)
+        gameStore.tryMove(legalMoves.from, tile)
         setLegalMoves({ from: null, to: [] }) // clear after moving
         return
       }

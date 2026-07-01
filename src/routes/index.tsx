@@ -1,5 +1,6 @@
 import { TILE_SIZE } from '#/components/canvas/conf.ts'
 import { KBoard } from '#/components/canvas/k-board.tsx'
+import { RightPanel } from '#/components/right-panel'
 import { createFileRoute } from '@tanstack/react-router'
 import Konva from 'konva'
 import { Stage } from 'react-konva'
@@ -12,7 +13,7 @@ export const Route = createFileRoute('/')({
 })
 function Home() {
   return (
-    <div className="flex items-center justify-start h-screen w-screen overflow-clip">
+    <div className="grid grid-cols-[1fr_1fr] gap-5 p-5 h-svh w-svw overflow-clip">
       <Stage
         height={TILE_SIZE * 9}
         width={TILE_SIZE * 9}
@@ -20,6 +21,7 @@ function Home() {
       >
         <KBoard />
       </Stage>
+      <RightPanel />
     </div>
   )
 }

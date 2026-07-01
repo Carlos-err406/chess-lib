@@ -2,8 +2,10 @@ import type { Board } from '../board'
 import type { Move } from './move'
 
 export class History {
-  private moves: Move[] = []
-  private redoStack: Move[] = []
+  constructor(
+    public moves: Move[] = [],
+    private redoStack: Move[] = [],
+  ) {}
 
   push(move: Move) {
     this.moves.push(move)
