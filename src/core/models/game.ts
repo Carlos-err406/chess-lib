@@ -77,7 +77,7 @@ export class Game {
     move.apply(this.board)
 
     this.history.push(move)
-    this.computeStatus()
+    return this.computeStatus()
   }
 
   public undo() {
@@ -108,21 +108,22 @@ export class Game {
     if (hasMove) {
       // if the player has legal moves to make then nothing is decided yet
       this.status = GameStatusKinds.ONGOING
-      return
-    }
-    // the player has no moves to make, is either checkmate or stalemate depending on if the king is in check
-    if (this.isCheck(side)) {
-      if (side === Colors.WHITE) {
-        // checkmate white, black wins
-        this.status = GameStatusKinds.BLACK_WIN
-      } else {
-        // checkmate black, white wins
-        this.status = GameStatusKinds.WHITE_WIN
-      }
     } else {
-      // no legal moves to make, but not in check, stalemate
-      this.status = GameStatusKinds.STALEMATE
+      // the player has no moves to make, is either checkmate or stalemate depending on if the king is in check
+      if (this.isCheck(side)) {
+        if (side === Colors.WHITE) {
+          // checkmate white, black wins
+          this.status = GameStatusKinds.BLACK_WIN
+        } else {
+          // checkmate black, white wins
+          this.status = GameStatusKinds.WHITE_WIN
+        }
+      } else {
+        // no legal moves to make, but not in check, stalemate
+        this.status = GameStatusKinds.STALEMATE
+      }
     }
+    return this.#status
   }
 
   public isCheck(color: Colors): boolean {

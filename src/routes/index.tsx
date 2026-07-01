@@ -11,7 +11,6 @@ Konva.pixelRatio = 3 // increase the dpi
 
 export const Route = createFileRoute('/')({
   component: Home,
-  pendingComponent: () => null,
 })
 function Home() {
   return (
