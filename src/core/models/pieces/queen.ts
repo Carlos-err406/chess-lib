@@ -23,6 +23,7 @@ export class Queen extends Piece {
     MOVE_DIAG_UP_LEFT,
     MOVE_DIAG_UP_RIGHT,
   ]
+  public static VALUE = 9
   constructor(color: Colors, moved = false) {
     super({
       color,
@@ -30,6 +31,7 @@ export class Queen extends Piece {
       moveKind: MoveKinds.SLIDE,
       moveDeltas: Queen.MOVE_DELTAS,
       moved,
+      value: Queen.VALUE,
     })
   }
 

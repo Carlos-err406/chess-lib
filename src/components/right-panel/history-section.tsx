@@ -1,5 +1,5 @@
-import { useGame } from '#/state/use-game.ts';
-import { HistoryMove } from './history-move';
+import { useGame } from '#/state/use-game.ts'
+import { HistoryMove } from './history-move'
 
 export const HistorySection = () => {
   const game = useGame()
@@ -16,7 +16,11 @@ export const HistorySection = () => {
         />
       ))}
       {[...game.history.moves].reverse().map((move, i, arr) => (
-        <HistoryMove move={move} moveNumber={arr.length - i} />
+        <HistoryMove
+          key={`history-move-${i}`}
+          move={move}
+          moveNumber={arr.length - i}
+        />
       ))}
     </div>
   )

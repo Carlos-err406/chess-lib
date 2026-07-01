@@ -15,6 +15,7 @@ export class Rook extends Piece {
     MOVE_RIGHT,
     MOVE_LEFT,
   ]
+  public static VALUE = 5
   constructor(color: Colors, moved = false) {
     super({
       color,
@@ -22,6 +23,7 @@ export class Rook extends Piece {
       moveKind: MoveKinds.SLIDE,
       moveDeltas: Rook.MOVE_DELTAS,
       moved,
+      value: Rook.VALUE,
     })
   }
 

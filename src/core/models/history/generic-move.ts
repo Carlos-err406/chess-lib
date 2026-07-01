@@ -1,6 +1,6 @@
 import type { Board } from '../board'
-import type { Piece } from '../pieces'
 import type { TileName } from '../board/tile'
+import type { Piece } from '../pieces'
 import { Move } from './move'
 
 export class GenericMove extends Move {
@@ -37,7 +37,13 @@ export class GenericMove extends Move {
       {
         from: this.from,
         to: this.to,
-        pieceAsset: this.movedPiece?.assetUrl ?? '',
+        movedPieceAsset: this.movedPiece!.assetUrl,
+        movedPieceName: this.movedPiece!.constructor.name,
+        movedPieceColor: this.movedPiece!.color,
+        capturedPieceAsset: this.captured?.assetUrl,
+        capturedPieceName: this.captured?.constructor.name,
+        capturedPieceColor: this.captured?.color,
+        capturedPieceValue: this.captured?.value,
       },
     ]
   }

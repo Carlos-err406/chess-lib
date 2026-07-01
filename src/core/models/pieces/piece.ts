@@ -43,6 +43,7 @@ type PieceConstructorOpts = {
   moveKind: MoveKinds
   moveDeltas: MoveDelta[]
   moved?: boolean
+  value: number
 }
 
 export abstract class Piece {
@@ -54,12 +55,14 @@ export abstract class Piece {
   protected moveDeltas: MoveDelta[]
   protected _moved!: boolean
   readonly color: Colors
+  readonly value: number
 
   constructor({
     color,
     key,
     moveKind: moveType,
     moveDeltas,
+    value,
     moved = false,
   }: PieceConstructorOpts) {
     this.id = Piece.counter++
@@ -71,6 +74,7 @@ export abstract class Piece {
     const assetName = this.constructor.name.toLowerCase()
     const assetColorSuffix = color === Colors.WHITE ? 'w' : 'b'
     this.assetUrl = `${ASSET_PIECE_BASE_URL}/${ASSET_STYLE}/${assetName}-${assetColorSuffix}.svg`
+    this.value = value
   }
 
   protected classifyTile(board: Board, col: number, row: number): TileKinds {

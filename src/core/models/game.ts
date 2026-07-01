@@ -12,10 +12,10 @@ import {
 import { Colors, King, Pawn, Rook } from './pieces'
 
 export enum GameStatusKinds {
-  ONGOING,
-  WHITE_WIN,
-  BLACK_WIN,
-  STALEMATE,
+  ONGOING = 'ongoing',
+  WHITE_WIN = 'white wins',
+  BLACK_WIN = 'black wins',
+  STALEMATE = 'stale mate',
 }
 
 export class Game {
@@ -242,5 +242,46 @@ export class Game {
   public static enemyOf(color: Colors) {
     if (color === Colors.WHITE) return Colors.BLACK
     else return Colors.WHITE
+  }
+
+  public getMaterial() {
+    return this.history.moves.reduce<{
+      [Colors.WHITE]: number
+      [Colors.BLACK]: number
+    }>(
+      (acc, move) => {
+        const metaWithCapturedPiece = move.metadata.find(
+          (meta) => meta.capturedPieceName,
+        )
+        if (!metaWithCapturedPiece) return acc
+
+        acc[metaWithCapturedPiece.movedPieceColor] +=
+          metaWithCapturedPiece.capturedPieceValue ?? 0
+
+        return acc
+      },
+      { [Colors.WHITE]: 0, [Colors.BLACK]: 0 },
+    )
+  }
+
+  public getCapturedAssets() {
+    return this.history.moves.reduce<{
+      [Colors.WHITE]: string[]
+      [Colors.BLACK]: string[]
+    }>(
+      (acc, move) => {
+        const metaWithCapturedPiece = move.metadata.find(
+          (meta) => meta.capturedPieceName,
+        )
+        if (!metaWithCapturedPiece?.capturedPieceAsset) return acc
+
+        acc[metaWithCapturedPiece.movedPieceColor].push(
+          metaWithCapturedPiece.capturedPieceAsset,
+        )
+
+        return acc
+      },
+      { [Colors.WHITE]: [], [Colors.BLACK]: [] },
+    )
   }
 }

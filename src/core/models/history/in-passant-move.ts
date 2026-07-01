@@ -4,8 +4,8 @@ import type { Piece } from '../pieces'
 import { Move } from './move'
 
 export class InPassantMove extends Move {
-  private movedPawn: Piece | null = null
-  private capturedPawn: Piece | null = null
+  private movedPiece: Piece | null = null
+  private capturedPiece: Piece | null = null
   private capturedSquare: TileName | null = null
   private flippedMovedFlag = false
   constructor(
@@ -23,9 +23,9 @@ export class InPassantMove extends Move {
 
     // the captured pawn sits on the moving pawn's ROW, in the destination's COL
     const capturedTile = board.tileAt(toTile.col, fromTile.row) // (col, row)
-    this.capturedPawn = capturedTile.piece
+    this.capturedPiece = capturedTile.piece
     this.capturedSquare = capturedTile.name
-    this.movedPawn = movedPawn
+    this.movedPiece = movedPawn
 
     // execute: move our pawn, remove the captured pawn from its (different) square
     this.flippedMovedFlag = movedPawn.moved === false
@@ -37,15 +37,15 @@ export class InPassantMove extends Move {
   }
 
   undo(board: Board): void {
-    if (!this.movedPawn || !this.capturedSquare) return
+    if (!this.movedPiece || !this.capturedSquare) return
     const fromTile = board.tileAtName(this.from)
     const toTile = board.tileAtName(this.to)
     const capturedTile = board.tileAtName(this.capturedSquare)
 
-    fromTile.setPiece(this.movedPawn)
+    fromTile.setPiece(this.movedPiece)
     toTile.setPiece(null)
-    capturedTile.setPiece(this.capturedPawn)
-    this.movedPawn.moved = !this.flippedMovedFlag
+    capturedTile.setPiece(this.capturedPiece)
+    this.movedPiece.moved = !this.flippedMovedFlag
   }
 
   get metadata() {
@@ -53,7 +53,13 @@ export class InPassantMove extends Move {
       {
         from: this.from,
         to: this.to,
-        pieceAsset: this.movedPawn?.assetUrl ?? '',
+        movedPieceAsset: this.movedPiece!.assetUrl,
+        movedPieceName: this.movedPiece!.constructor.name,
+        movedPieceColor: this.movedPiece!.color,
+        capturedPieceAsset: this.capturedPiece?.assetUrl,
+        capturedPieceName: this.capturedPiece?.constructor.name,
+        capturedPieceColor: this.capturedPiece?.color,
+        capturedPieceValue: this.capturedPiece?.value,
       },
     ]
   }

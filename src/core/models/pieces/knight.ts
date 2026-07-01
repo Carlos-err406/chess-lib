@@ -23,6 +23,7 @@ export class Knight extends Piece {
     MOVE_L_LEFT_UP,
     MOVE_L_RIGHT_UP,
   ]
+  public static VALUE = 3
   constructor(color: Colors, moved = false) {
     super({
       color,
@@ -30,6 +31,7 @@ export class Knight extends Piece {
       moveKind: MoveKinds.JUMP,
       moveDeltas: Knight.MOVE_DELTAS,
       moved,
+      value: Knight.VALUE,
     })
   }
   clone() {

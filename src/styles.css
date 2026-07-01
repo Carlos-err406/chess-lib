@@ -169,14 +169,6 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@utility auto-grid {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(min(var(--min-col-size), 100%), 1fr)
-  );
-}
-
 @layer base {
   body {
     background-color: var(--background);

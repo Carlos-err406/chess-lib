@@ -23,6 +23,7 @@ export class King extends Piece {
     MOVE_DIAG_UP_LEFT,
     MOVE_DIAG_UP_RIGHT,
   ]
+  public static VALUE = Infinity
   constructor(color: Colors, moved = false) {
     super({
       color,
@@ -30,6 +31,7 @@ export class King extends Piece {
       moveKind: MoveKinds.JUMP,
       moveDeltas: King.MOVE_DELTAS,
       moved,
+      value: King.VALUE,
     })
   }
   clone() {

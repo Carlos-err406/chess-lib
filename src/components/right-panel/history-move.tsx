@@ -17,7 +17,7 @@ export const HistoryMove: FC<{
         {move.metadata.map((meta, i) => (
           <div key={`history-move-${mn}${i}`} className="flex items-center">
             <img
-              src={meta.pieceAsset}
+              src={meta.movedPieceAsset}
               width={30}
               height={30}
               className="mb-1"
