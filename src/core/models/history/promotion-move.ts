@@ -31,4 +31,8 @@ export class PromotionMove extends Move {
     this.movedPiece.moved = !this.flippedMovedFlag // reverse the moved-flag flip
     fromTile.setPiece(this.movedPiece) // put the mover back on `from`
   }
+
+  get metadata() {
+    return []
+  }
 }

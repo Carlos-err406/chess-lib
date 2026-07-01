@@ -47,4 +47,14 @@ export class InPassantMove extends Move {
     capturedTile.setPiece(this.capturedPawn)
     this.movedPawn.moved = !this.flippedMovedFlag
   }
+
+  get metadata() {
+    return [
+      {
+        from: this.from,
+        to: this.to,
+        pieceAsset: this.movedPawn?.assetUrl ?? '',
+      },
+    ]
+  }
 }

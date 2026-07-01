@@ -1,12 +1,12 @@
 import type { TileName } from '../board'
 import { Board } from '../board'
 import { Colors } from '../pieces'
-import { BatchMove } from './batch-move'
 import { GenericMove } from './generic-move'
 import { Move } from './move'
 
 export class CastlingMove extends Move {
-  private move!: BatchMove
+  private kingMove!: GenericMove
+  private rookMove!: GenericMove
 
   constructor(
     private from: TileName,
@@ -28,15 +28,18 @@ export class CastlingMove extends Move {
 
     const rookFrom: TileName = kingside ? `H${rank}` : `A${rank}`
     const rookTo: TileName = kingside ? `F${rank}` : `D${rank}`
-    this.move = new BatchMove([
-      new GenericMove(this.from, this.to),
-      new GenericMove(rookFrom, rookTo),
-    ])
-    this.move.apply(board)
+    this.kingMove = new GenericMove(this.from, this.to)
+    this.rookMove = new GenericMove(rookFrom, rookTo)
+    this.kingMove.apply(board)
+    this.rookMove.apply(board)
   }
 
   undo(board: Board): void {
-    // reverse order: rook first, then king (or either, since squares are disjoint)
-    this.move.undo(board)
+    this.rookMove.undo(board)
+    this.kingMove.undo(board)
+  }
+
+  get metadata() {
+    return [...this.kingMove.metadata, ...this.rookMove.metadata]
   }
 }

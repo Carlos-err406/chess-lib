@@ -1,6 +1,5 @@
 export * from './history'
 export * from './move'
-export * from './batch-move'
 export * from './generic-move'
 export * from './promotion-move'
 export * from './castling-move'

@@ -6,6 +6,10 @@ import { gameStore } from './game-state.ts'
  * engine to read from. Re-renders on every move, undo, or redo.
  */
 export const useGame = () => {
-  useSyncExternalStore(gameStore.subscribe, gameStore.getSnapshot)
+  useSyncExternalStore(
+    gameStore.subscribe,
+    gameStore.getSnapshot,
+    gameStore.getSnapshot,
+  )
   return gameStore.game
 }

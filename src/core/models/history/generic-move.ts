@@ -31,4 +31,14 @@ export class GenericMove extends Move {
     this.movedPiece.moved = !this.flippedMovedFlag // reverse the moved-flag flip
     fromTile.setPiece(this.movedPiece) // put the mover back on `from`
   }
+
+  get metadata() {
+    return [
+      {
+        from: this.from,
+        to: this.to,
+        pieceAsset: this.movedPiece?.assetUrl ?? '',
+      },
+    ]
+  }
 }

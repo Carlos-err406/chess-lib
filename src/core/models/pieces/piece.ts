@@ -3,12 +3,12 @@ import { Board } from '../board'
 import type { Tile } from '../board/tile'
 
 export enum Colors {
-  WHITE,
-  BLACK,
+  WHITE = 'white',
+  BLACK = 'black',
 }
 export enum MoveKinds {
-  SLIDE,
-  JUMP,
+  SLIDE = 'slide',
+  JUMP = 'jump',
 }
 export type MoveDelta = [number, number] // x, y
 export enum TileKinds {

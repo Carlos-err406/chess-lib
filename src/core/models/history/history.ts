@@ -4,7 +4,7 @@ import type { Move } from './move'
 export class History {
   constructor(
     public moves: Move[] = [],
-    private redoStack: Move[] = [],
+    public redoStack: Move[] = [],
   ) {}
 
   push(move: Move) {
