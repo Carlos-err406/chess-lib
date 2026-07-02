@@ -28,7 +28,7 @@ export const KTile: FC<{
   const strokeColor = isCheck
     ? TILE_HIGHLIGHTED_CHECK_COLOR
     : highlightLegalMove
-      ?  TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR(isAttacked)
+      ? TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR(isAttacked)
       : TILE_STROKE_COLOR
 
   const { x, y } = getTileCoords(tile)
