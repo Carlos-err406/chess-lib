@@ -1,5 +1,4 @@
-import type { Tile } from '#/core/models/board'
-import { Game } from '#/core/models/game.ts'
+import { Game } from '#/core/models/game.ts';
 
 const game = new Game()
 
@@ -31,8 +30,8 @@ export const gameStore = {
   // useSyncExternalStore won't loop; it flips on every mutation.
   getSnapshot: () => version,
 
-  tryMove: (from: Tile, to: Tile) => {
-    game.tryMove(from, to)
+  tryMove: (...args: Parameters<typeof game.tryMove>) => {
+    game.tryMove(...args)
     emit()
   },
 

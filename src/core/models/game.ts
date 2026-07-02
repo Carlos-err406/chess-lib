@@ -1,6 +1,6 @@
 import type { Col, PieceTile } from './board'
 import { Board, Tile } from './board'
-import type { Move } from './history'
+import type { Move, PromotionPieceName } from './history'
 import {
   CastlingMove,
   GenericMove,
@@ -81,13 +81,13 @@ export class Game {
     return moves
   }
 
-  public tryMove(from: Tile, to: Tile) {
+  public tryMove(from: Tile, to: Tile, promoteTo?: PromotionPieceName) {
     const fromPiece = from.piece
     if (!fromPiece) return
     if (fromPiece.color !== this.turnColor) return
     if (!this.getLegalMoves(from).includes(to)) return
 
-    const move = this.buildMove(from, to)
+    const move = this.buildMove(from, to, promoteTo)
     move.apply(this.board)
 
     this.history.push(move)
@@ -141,25 +141,44 @@ export class Game {
     return this.status
   }
 
-  private buildMove(from: Tile, to: Tile): Move {
-    const piece = from.piece! // tryMove already verified non-null
-    if (piece instanceof Pawn) {
-      if (Board.isPromotionRank(to, piece.color)) {
-        return new PromotionMove(from.name, to.name, 'Queen') // TODO: Chosen piece
-      }
-      if (from.col !== to.col && to.piece === null) {
-        return new InPassantMove(from.name, to.name)
-      }
-      if (Math.abs(to.row - from.row) === 2) {
-        return new PawnDoubleStepMove(from.name, to.name)
-      }
-    }
-
-    // Castling: a king moving two files
-    if (piece instanceof King && Math.abs(to.col - from.col) === 2) {
+  public static isPromotionMove(from: Tile, to: Tile) {
+    const piece = from.piece
+    if (!(piece instanceof Pawn)) return false
+    return Board.isPromotionRank(to, piece.color)
+  }
+  public static isInPassantMove(from: Tile, to: Tile) {
+    const piece = from.piece
+    if (!(piece instanceof Pawn)) return false
+    return from.col !== to.col && to.piece === null
+  }
+  public static isPawnDoubleStepMove(from: Tile, to: Tile) {
+    const piece = from.piece
+    if (!(piece instanceof Pawn)) return false
+    return Math.abs(to.row - from.row) === 2
+  }
+  public static isCastlingMove(from: Tile, to: Tile) {
+    const piece = from.piece
+    if (!piece) return false
+    if (!(piece instanceof King)) return false
+    return Math.abs(to.col - from.col) === 2
+  }
+  private buildMove(
+    from: Tile,
+    to: Tile,
+    promoteTo?: PromotionPieceName,
+  ): Move {
+    if (Game.isPromotionMove(from, to) && promoteTo)
+      return new PromotionMove(from.name, to.name, promoteTo)
+    
+    if (Game.isInPassantMove(from, to))
+      return new InPassantMove(from.name, to.name)
+    
+    if (Game.isPawnDoubleStepMove(from, to))
+      return new PawnDoubleStepMove(from.name, to.name)
+    
+    if (Game.isCastlingMove(from, to))
       return new CastlingMove(from.name, to.name)
-    }
-
+    
     // Everything else (quiet move or normal capture)
     return new GenericMove(from.name, to.name)
   }

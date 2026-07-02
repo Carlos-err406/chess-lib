@@ -73,6 +73,7 @@ export class Pawn extends Piece {
       const tileKind = this.classifyTile(board, targetCol, targetRow)
       if (tileKind === TileKinds.EMPTY)
         moves.push(board.tileAt(targetCol, targetRow))
+      else break // so a pawn cant jump over another piece with the 2step move
     }
     for (const [dCol, dRow] of this.captureDeltas) {
       const targetCol = from.col + dCol

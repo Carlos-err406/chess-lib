@@ -1,9 +1,10 @@
 import type { Board } from '../board'
 import type { TileName } from '../board/tile'
-import { Bishop, Knight, Queen, Rook } from '../pieces'
 import type { Piece } from '../pieces'
+import { Bishop, Knight, Queen, Rook } from '../pieces'
 import { Move } from './move'
 
+export type PromotionPieceName = keyof typeof PromotionMove.PROMOTION_PIECES
 export class PromotionMove extends Move {
   public static readonly PROMOTION_PIECES = { Queen, Rook, Bishop, Knight }
   private captured: Piece | null = null
@@ -13,7 +14,7 @@ export class PromotionMove extends Move {
   constructor(
     from: TileName,
     to: TileName,
-    private promotedTo: keyof typeof PromotionMove.PROMOTION_PIECES,
+    private promotedTo: PromotionPieceName,
   ) {
     super(from, to)
   }
