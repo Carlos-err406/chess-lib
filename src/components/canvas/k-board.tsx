@@ -21,12 +21,9 @@ export const KBoard: FC = () => {
     // A selection is active → this click is either a move or a reselect/clear
     if (legalMoves.from) {
       // clicked a legal target → attempt the move
-      if (legalMoves.to.includes(tile)) {
-        gameStore.tryMove(legalMoves.from, tile)
-        setLegalMoves({ from: null, to: [] }) // clear after moving
-        return
-      }
-      // clicked something else → fall through to (re)selection logic below
+      gameStore.tryMove(legalMoves.from, tile)
+      setLegalMoves({ from: null, to: [] }) // clear after moving
+      return
     }
 
     // (Re)selection: only select a piece whose turn it is
@@ -59,9 +56,9 @@ export const KBoard: FC = () => {
   return (
     <Layer>
       {renderBoard()}
-      <KPieces />
       <KBoardLetters />
       <KBoardNumbers />
+      <KPieces />
     </Layer>
   )
 }

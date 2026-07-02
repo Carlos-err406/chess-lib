@@ -2,7 +2,7 @@ import type { Tile } from '#/core/models/board/tile.ts'
 import { useIsTileAttacked } from '#/lib/state/use-is-tile-in-check.ts'
 import type { FC } from 'react'
 import { useState } from 'react'
-import { Group, Rect } from 'react-konva'
+import { Circle, Group, Rect } from 'react-konva'
 import {
   TILE_COLOR,
   TILE_HIGHLIGHTED_CHECK_COLOR,
@@ -20,16 +20,18 @@ export const KTile: FC<{
   onClick: () => void
 }> = ({ tile, onClick, highlightLegalMove = false }) => {
   const [hovering, setHovering] = useState(false)
+
   const isAttacked = useIsTileAttacked(tile)
   const isCheck = tile.piece instanceof King && isAttacked
-  const strokeWidth =
-    hovering || highlightLegalMove || isCheck ? TILE_HOVER_STROKE_WIDTH : 0
 
-  const strokeColor = isCheck
+  const showStroke = hovering
+  const strokeWidth = showStroke ? TILE_HOVER_STROKE_WIDTH : 0
+
+  const highlightColor = isCheck
     ? TILE_HIGHLIGHTED_CHECK_COLOR
     : highlightLegalMove
       ? TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR(isAttacked)
-      : TILE_STROKE_COLOR
+      : 'transparent'
 
   const { x, y } = getTileCoords(tile)
 
@@ -45,8 +47,20 @@ export const KTile: FC<{
         width={TILE_SIZE - strokeWidth}
         height={TILE_SIZE - strokeWidth}
         fill={TILE_COLOR[tile.shade]}
-        stroke={strokeColor}
+        stroke={TILE_STROKE_COLOR}
         strokeWidth={strokeWidth}
+      />
+
+      <Circle
+        x={x + TILE_SIZE / 2}
+        y={y + TILE_SIZE / 2}
+        radius={TILE_SIZE / 3.5}
+        fill={highlightColor}
+        opacity={0.4}
+        shadowColor={highlightColor}
+        shadowBlur={50}
+        shadowOffset={{ x: 0, y: 0 }}
+        shadowEnabled
       />
     </Group>
   )
