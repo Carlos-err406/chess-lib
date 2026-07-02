@@ -1,5 +1,5 @@
 import { GameStatusKinds } from '#/core/models/game'
-import { useGame } from '#/state/use-game.ts'
+import { useGame } from '#/lib/state/use-game.ts'
 import type { FC } from 'react'
 import { useEffect } from 'react'
 import { useCelebrate } from '../confetti/confetti-provider'

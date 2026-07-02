@@ -1,15 +1,18 @@
 import type { Tile } from '#/core/models/board/tile.ts'
+import { useIsTileAttacked } from '#/lib/state/use-is-tile-in-check.ts'
 import type { FC } from 'react'
 import { useState } from 'react'
 import { Group, Rect } from 'react-konva'
 import {
   TILE_COLOR,
+  TILE_HIGHLIGHTED_CHECK_COLOR,
   TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR,
   TILE_HOVER_STROKE_WIDTH,
   TILE_SIZE,
   TILE_STROKE_COLOR,
 } from './conf'
 import { getTileCoords } from './helpers'
+import { King } from '#/core/models/pieces/index.ts'
 
 export const KTile: FC<{
   tile: Tile
@@ -17,12 +20,17 @@ export const KTile: FC<{
   onClick: () => void
 }> = ({ tile, onClick, highlightLegalMove = false }) => {
   const [hovering, setHovering] = useState(false)
+  const isAttacked = useIsTileAttacked(tile)
+  const isCheck = tile.piece instanceof King && isAttacked
   const strokeWidth =
-    hovering || highlightLegalMove ? TILE_HOVER_STROKE_WIDTH : 0
+    hovering || highlightLegalMove || isCheck ? TILE_HOVER_STROKE_WIDTH : 0
 
-  const strokeColor = highlightLegalMove
-    ? TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR
-    : TILE_STROKE_COLOR
+  const strokeColor = isCheck
+    ? TILE_HIGHLIGHTED_CHECK_COLOR
+    : highlightLegalMove
+      ?  TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR(isAttacked)
+      : TILE_STROKE_COLOR
+
   const { x, y } = getTileCoords(tile)
 
   return (

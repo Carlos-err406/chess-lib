@@ -123,7 +123,8 @@ export class Game {
         this.status = GameStatusKinds.STALEMATE
       }
     }
-    return this.#status
+
+    return this.status
   }
 
   public isCheck(color: Colors): boolean {
@@ -231,7 +232,7 @@ export class Game {
     return this.board.tileAtName(spec.kingPath.at(-1)!.name)
   }
 
-  private isSquareAttacked(tile: Tile, byColor: Colors): boolean {
+  public isSquareAttacked(tile: Tile, byColor: Colors): boolean {
     for (const enemy of this.board.getPlayerTiles(byColor)) {
       if (!enemy.piece) continue
       if (enemy.piece.getPseudoMoves(this.board, enemy).includes(tile))

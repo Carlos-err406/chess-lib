@@ -1,5 +1,5 @@
-import { gameStore } from '#/state/game-state.ts'
-import { useGame } from '#/state/use-game.ts'
+import { gameStore } from '#/lib/state/game-state.ts'
+import { useGame } from '#/lib/state/use-game.ts'
 import type { FC } from 'react'
 
 export const UndoRedoButtons: FC = () => {

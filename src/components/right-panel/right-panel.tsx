@@ -1,5 +1,5 @@
 import { Colors } from '#/core/models/pieces/index.ts'
-import { useGame } from '#/state/use-game.ts'
+import { useGame } from '#/lib/state/use-game.ts'
 import type { FC } from 'react'
 import { CapturesSection } from './captures-section'
 import { HistorySection } from './history-section'

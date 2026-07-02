@@ -1,14 +1,14 @@
-import type { Col, Row, Tile } from '#/core/models/board';
-import { Board } from '#/core/models/board';
-import { gameStore } from '#/state/game-state.ts';
-import { useGame } from '#/state/use-game.ts';
-import type { FC } from 'react';
-import { useState } from 'react';
-import { Layer } from 'react-konva';
-import { KBoardLetters } from './k-board-letters';
-import { KBoardNumbers } from './k-board-numbers';
-import { KPieces } from './k-pieces';
-import { KTile } from './k-tile';
+import type { Col, Row, Tile } from '#/core/models/board'
+import { Board } from '#/core/models/board'
+import { gameStore } from '#/lib/state/game-state.ts'
+import { useGame } from '#/lib/state/use-game.ts'
+import type { FC } from 'react'
+import { useState } from 'react'
+import { Layer } from 'react-konva'
+import { KBoardLetters } from './k-board-letters'
+import { KBoardNumbers } from './k-board-numbers'
+import { KPieces } from './k-pieces'
+import { KTile } from './k-tile'
 
 export const KBoard: FC = () => {
   const game = useGame()

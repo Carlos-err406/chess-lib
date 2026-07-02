@@ -1,4 +1,4 @@
-import { useGame } from '#/state/use-game.ts'
+import { useGame } from '#/lib/state/use-game.ts'
 import { HistoryMove } from './history-move'
 
 export const HistorySection = () => {

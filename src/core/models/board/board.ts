@@ -1,4 +1,4 @@
-import type { TileName } from '../board/tile'
+import type { PieceTile, TileName } from '../board/tile'
 import { Tile } from '../board/tile'
 import type { Piece } from '../pieces'
 import { Bishop, Colors, King, Knight, Pawn, Queen, Rook } from '../pieces'
@@ -133,11 +133,11 @@ export class Board {
     return tiles
   }
 
-  public getTilesWithPieces() {
-    const tiles: Tile[] = []
+  public getTilesWithPieces(): PieceTile[] {
+    const tiles: PieceTile[] = []
     for (const row of this.grid) {
       for (const tile of row) {
-        if (tile.piece) tiles.push(tile)
+        if (tile.piece) tiles.push(tile as PieceTile)
       }
     }
     return tiles

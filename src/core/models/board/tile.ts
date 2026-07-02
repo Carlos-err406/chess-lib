@@ -99,3 +99,11 @@ export class Tile {
     return this.name
   }
 }
+
+export class PieceTile extends Tile {
+  declare public piece: Piece
+  constructor(tile: Tile, piece: Piece) {
+    super(tile)
+    this.piece = piece
+  }
+}

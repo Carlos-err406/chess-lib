@@ -1,4 +1,6 @@
-import type { Piece } from '#/core/models/pieces'
+import type { PieceTile } from '#/core/models/board'
+import { King } from '#/core/models/pieces/index.ts'
+import { useIsTileAttacked } from '#/lib/state/use-is-tile-in-check.ts'
 import type Konva from 'konva'
 import type { Vector2d } from 'konva/lib/types'
 import type { FC } from 'react'
@@ -6,20 +8,20 @@ import { useEffect, useRef } from 'react'
 import { PIECE_MOVE_DURATION, PIECE_MOVE_EASING, TILE_SIZE } from './conf'
 import { URLImage } from './url-image'
 
-export const KPiece: FC<{ piece: Piece; coord: Vector2d }> = ({
-  piece,
+export const KPiece: FC<{ tile: PieceTile; coord: Vector2d }> = ({
+  tile,
   coord,
 }) => {
   const ref = useRef<Konva.Image>(null)
-  // Where the node is currently drawn. Lags `coord` by one move so the tween
-  // can run from the old square to the new one.
   const drawnAt = useRef(coord)
+  const isAttacked = useIsTileAttacked(tile)
 
   useEffect(() => {
+    // piece movement animation
     const node = ref.current
     if (!node) return
     if (drawnAt.current.x === coord.x && drawnAt.current.y === coord.y) return
-    node.moveToTop() // slide over other pieces while moving
+    node.moveToTop()
     node.to({
       x: coord.x,
       y: coord.y,
@@ -29,10 +31,34 @@ export const KPiece: FC<{ piece: Piece; coord: Vector2d }> = ({
     drawnAt.current = coord
   }, [coord.x, coord.y])
 
+  useEffect(() => {
+    // tremble animation for when the king is in check
+    const node = ref.current
+    if (!node || !isAttacked || !(tile.piece instanceof King)) return
+
+    const baseX = coord.x
+    const amp = 5
+    const offsets = [amp, -amp, amp * 0.6, -amp * 0.6, 0] // decays to rest
+
+    let i = 0
+    const next = () => {
+      if (i >= offsets.length) return
+      node.to({
+        x: baseX + offsets[i],
+        duration: 0.05,
+        onFinish: () => {
+          i++
+          next()
+        },
+      })
+    }
+    next()
+  }, [isAttacked])
+
   return (
     <URLImage
       ref={ref}
-      src={piece.assetUrl}
+      src={tile.piece.assetUrl}
       x={drawnAt.current.x}
       y={drawnAt.current.y}
       width={TILE_SIZE}
