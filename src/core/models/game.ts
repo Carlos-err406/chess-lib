@@ -1,4 +1,4 @@
-import type { Col } from './board'
+import type { Col, PieceTile } from './board'
 import { Board, Tile } from './board'
 import type { Move } from './history'
 import {
@@ -49,6 +49,20 @@ export class Game {
     return from.piece?.getPseudoMoves(this.board, from) ?? []
   }
 
+  public getSquareAttacker(tile: Tile, byColor: Colors): PieceTile | null {
+    for (const enemy of this.board.getPlayerTiles(byColor)) {
+      if (this.getPseudoMoves(enemy).some((t) => t.name === tile.name))
+        return enemy
+    }
+    return null
+  }
+
+  public isCheck(color: Colors): boolean {
+    return !!this.getSquareAttacker(
+      this.board.getKingTile(color),
+      Game.enemyOf(color),
+    )
+  }
   public getLegalMoves(from: Tile): Tile[] {
     const fromPiece = from.piece
     const moves: Tile[] = []
@@ -127,13 +141,6 @@ export class Game {
     return this.status
   }
 
-  public isCheck(color: Colors): boolean {
-    return this.isSquareAttacked(
-      this.board.getKingTile(color),
-      Game.enemyOf(color),
-    )
-  }
-
   private buildMove(from: Tile, to: Tile): Move {
     const piece = from.piece! // tryMove already verified non-null
     if (piece instanceof Pawn) {
@@ -168,13 +175,20 @@ export class Game {
     const reachable = pawn.isCaptureSquare(from, target)
     return reachable ? target : null
   }
+
+  public isEnPassant(from: Tile, to: Tile): boolean {
+    if (!(from.piece instanceof Pawn)) return false
+    if (to.piece !== null) return false // en passant target is empty
+    return this.getEnPassantTarget(from)?.name === to.name
+  }
+
   private getCastlingTargets(from: Tile): Tile[] {
     const king = from.piece
     const kingRank = from.rowName // 1 | 8
     if (!(king instanceof King) || king.moved) return []
     const enemy = Game.enemyOf(king.color)
     // cant castle if king is under attack (check)
-    if (this.isSquareAttacked(from, enemy)) return []
+    if (this.getSquareAttacker(from, enemy)) return []
 
     const targets: Tile[] = []
 
@@ -223,22 +237,13 @@ export class Game {
     // and the king's path is not under attack (path includes the destination);
     if (
       spec.kingPath.some((sq) =>
-        this.isSquareAttacked(this.board.tileAtName(sq.name), enemy),
+        this.getSquareAttacker(this.board.tileAtName(sq.name), enemy),
       )
     )
       return
 
     // then the king can castle
     return this.board.tileAtName(spec.kingPath.at(-1)!.name)
-  }
-
-  public isSquareAttacked(tile: Tile, byColor: Colors): boolean {
-    for (const enemy of this.board.getPlayerTiles(byColor)) {
-      if (!enemy.piece) continue
-      if (enemy.piece.getPseudoMoves(this.board, enemy).includes(tile))
-        return true
-    }
-    return false
   }
 
   public static enemyOf(color: Colors) {

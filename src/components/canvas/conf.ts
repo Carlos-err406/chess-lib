@@ -3,9 +3,8 @@ import Konva from 'konva'
 
 export const TILE_SIZE = 90
 export const TILE_STROKE_COLOR = '#666'
-export const TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR = (attack = false) =>
-  attack ? 'red' : '#00f'
-export const TILE_HIGHLIGHTED_CHECK_COLOR = 'red'
+export const TILE_HIGHLIGHTED_LEGAL_MOVE_COLOR = (capture = false) =>
+  capture ? '#f00' : '#00f'
 export const TILE_HOVER_STROKE_WIDTH = 2
 export const TILE_COLOR = {
   [TileShade.LIGHT]: '#fff',

@@ -2,7 +2,10 @@ import { gameStore } from '#/lib/state/game-state.ts'
 import { useGame } from '#/lib/state/use-game.ts'
 import type { FC } from 'react'
 
-export const UndoRedoButtons: FC = () => {
+export const UndoRedoButtons: FC<{
+  onUndo?: () => void
+  onRedo?: () => void
+}> = ({ onRedo, onUndo }) => {
   const game = useGame()
   return (
     <>
@@ -10,7 +13,10 @@ export const UndoRedoButtons: FC = () => {
         className="border disabled:opacity-50"
         type="button"
         disabled={game.history.length === 0}
-        onClick={() => gameStore.undo()}
+        onClick={() => {
+          gameStore.undo()
+          onUndo?.()
+        }}
       >
         Undo
       </button>
@@ -18,7 +24,10 @@ export const UndoRedoButtons: FC = () => {
         className="border disabled:opacity-50"
         type="button"
         disabled={game.history.redoStack.length === 0}
-        onClick={() => gameStore.redo()}
+        onClick={() => {
+          gameStore.redo()
+          onRedo?.()
+        }}
       >
         Redo
       </button>

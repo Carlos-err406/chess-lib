@@ -37,6 +37,9 @@ export const MOVE_L_RIGHT_DOWN: MoveDelta = [2, -1]
 export const MOVE_L_LEFT_UP: MoveDelta = [-2, 1]
 export const MOVE_L_LEFT_DOWN: MoveDelta = [-2, -1]
 
+export type PieceId = number & { __brand: 'PieceId' }
+export const pieceId = (id: number): PieceId => id as PieceId
+
 type PieceConstructorOpts = {
   color: Colors
   key: string
@@ -44,16 +47,17 @@ type PieceConstructorOpts = {
   moveDeltas: MoveDelta[]
   moved?: boolean
   value: number
-  id?: number
+  id?: PieceId
 }
 
 export abstract class Piece {
-  private static counter = 0
-  readonly id: number // stable identity per physical piece (used as a render key)
+  private static counter: PieceId = pieceId(0)
+  readonly id: PieceId // stable identity per physical piece (can be used as a render key)
   readonly key: string
   readonly assetUrl: string
-  readonly moveType: MoveKinds
+  readonly moveKind: MoveKinds
   protected moveDeltas: MoveDelta[]
+  protected captureDeltas: MoveDelta[]
   protected _moved!: boolean
   readonly color: Colors
   readonly value: number
@@ -61,16 +65,17 @@ export abstract class Piece {
   constructor({
     color,
     key,
-    moveKind: moveType,
+    moveKind,
     moveDeltas,
     value,
     moved = false,
     id,
   }: PieceConstructorOpts) {
-    this.id = id ?? Piece.counter++
+    this.id = pieceId(id ?? Piece.counter++)
     this.color = color
-    this.moveType = moveType
+    this.moveKind = moveKind
     this.moveDeltas = moveDeltas
+    this.captureDeltas = moveDeltas
     this.moved = moved
     this.key = color === Colors.WHITE ? key.toUpperCase() : key.toLowerCase()
     const assetName = this.constructor.name
@@ -81,6 +86,7 @@ export abstract class Piece {
     const assetColorSuffix = color === Colors.WHITE ? 'w' : 'b'
     return `${ASSET_PIECE_BASE_URL}/${ASSET_STYLE}/${pieceName.toLowerCase()}-${assetColorSuffix}.svg`
   }
+
   protected classifyTile(board: Board, col: number, row: number): TileKinds {
     if (!Board.isOnBoard(col, row)) return TileKinds.OFF_BOARD
     const piece = board.tileAt(col, row).piece // safe now — bounds already checked
@@ -89,9 +95,9 @@ export abstract class Piece {
   }
 
   public getPseudoMoves(board: Board, from: Tile): Tile[] {
-    const moves = []
+    const moves: Tile[] = []
     for (const [dCol, dRow] of this.moveDeltas) {
-      if (this.moveType === MoveKinds.JUMP) {
+      if (this.moveKind === MoveKinds.JUMP) {
         const targetCol = from.col + dCol
         const targetRow = from.row + dRow
         const tileKind = this.classifyTile(board, targetCol, targetRow)
@@ -128,6 +134,7 @@ export abstract class Piece {
   }
 
   public abstract clone(): Piece
+
   public toString() {
     return this.key
   }

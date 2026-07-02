@@ -1,6 +1,6 @@
 import type { PieceTile, TileName } from '../board/tile'
 import { Tile } from '../board/tile'
-import type { Piece } from '../pieces'
+import type { Piece, PieceId } from '../pieces'
 import { Bishop, Colors, King, Knight, Pawn, Queen, Rook } from '../pieces'
 
 export type Row = (typeof Board.Rows)[number]
@@ -124,10 +124,10 @@ export class Board {
   }
 
   public getPlayerTiles(color: Colors) {
-    const tiles: Tile[] = []
+    const tiles: PieceTile[] = []
     for (const row of this.grid) {
       for (const tile of row) {
-        if (tile.piece?.color === color) tiles.push(tile)
+        if (tile.piece?.color === color) tiles.push(tile as PieceTile)
       }
     }
     return tiles
@@ -145,6 +145,15 @@ export class Board {
 
   public clear() {
     this.initEmpty()
+  }
+
+  public getPieceTile(pieceId: PieceId): PieceTile | null {
+    for (const row of this.grid) {
+      for (const tile of row) {
+        if (tile.piece?.id === pieceId) return tile as PieceTile
+      }
+    }
+    return null
   }
 
   public toString() {

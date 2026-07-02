@@ -1,6 +1,6 @@
 import type { PieceTile } from '#/core/models/board'
 import { King } from '#/core/models/pieces/index.ts'
-import { useIsTileAttacked } from '#/lib/state/use-is-tile-in-check.ts'
+import { useTileAttackedFrom } from '#/lib/state/use-tile-attacked-from.ts'
 import type Konva from 'konva'
 import type { Vector2d } from 'konva/lib/types'
 import type { FC } from 'react'
@@ -14,7 +14,7 @@ export const KPiece: FC<{ tile: PieceTile; coord: Vector2d }> = ({
 }) => {
   const ref = useRef<Konva.Image>(null)
   const drawnAt = useRef(coord)
-  const isAttacked = useIsTileAttacked(tile)
+  const attackedFrom = useTileAttackedFrom(tile)
 
   useEffect(() => {
     // piece movement animation
@@ -34,7 +34,7 @@ export const KPiece: FC<{ tile: PieceTile; coord: Vector2d }> = ({
   useEffect(() => {
     // tremble animation for when the king is in check
     const node = ref.current
-    if (!node || !isAttacked || !(tile.piece instanceof King)) return
+    if (!node || !attackedFrom || !(tile.piece instanceof King)) return
 
     const baseX = coord.x
     const amp = 5
@@ -53,7 +53,7 @@ export const KPiece: FC<{ tile: PieceTile; coord: Vector2d }> = ({
       })
     }
     next()
-  }, [isAttacked])
+  }, [attackedFrom?.name])
 
   return (
     <URLImage

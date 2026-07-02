@@ -1,6 +1,6 @@
 import type { Board } from '../board'
 import type { Tile } from '../board/tile'
-import type { MoveDelta } from './piece'
+import type { MoveDelta, PieceId } from './piece'
 import {
   Colors,
   MOVE_DIAG_DOWN_LEFT,
@@ -31,9 +31,8 @@ export class Pawn extends Piece {
   ]
 
   public static VALUE = 1
-  private captureDeltas: MoveDelta[]
 
-  constructor(color: Colors, moved = false, id?: number) {
+  constructor(color: Colors, moved = false, id?: PieceId) {
     super({
       color,
       key: 'p',
@@ -67,7 +66,7 @@ export class Pawn extends Piece {
   }
 
   public getPseudoMoves(board: Board, from: Tile): Tile[] {
-    const moves = []
+    const moves: Tile[] = []
     for (const [dCol, dRow] of this.moveDeltas) {
       const targetCol = from.col + dCol
       const targetRow = from.row + dRow

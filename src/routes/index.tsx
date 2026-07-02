@@ -7,7 +7,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import Konva from 'konva'
 import { Stage } from 'react-konva'
 
-Konva.pixelRatio = 3 // increase the dpi
+Konva.pixelRatio = 3.125 // increase the dpi
 
 export const Route = createFileRoute('/')({
   component: Home,
