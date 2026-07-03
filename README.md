@@ -1,222 +1,213 @@
-Welcome to your new TanStack Start app!
+<div align="center">
 
-# Getting Started
+# ♟️ chess-lib
 
-To run this application:
+**A chess engine you can actually read — plus the React bindings and a canvas board to prove it works.**
+
+A framework-agnostic TypeScript chess engine, thin React hooks that bind it to any UI, and a polished Konva-rendered demo. All in one pnpm monorepo.
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](#-license)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![React 19](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)
+![pnpm workspace](https://img.shields.io/badge/pnpm-workspace-F69220?style=flat-square&logo=pnpm&logoColor=white)
+![Zero deps](https://img.shields.io/badge/core-zero_dependencies-brightgreen?style=flat-square)
+
+<br />
+
+<img src="apps/demo/imgs/chess-lib-demo.png" alt="chess-lib demo: a canvas chess board with file/rank coordinates, a move-history panel showing piece icons and from → to notation, undo/redo controls, and a captured-material tray with a material-advantage counter" width="100%" />
+
+</div>
+
+---
+
+## What's inside
+
+`chess-lib` is split into three layers, so you take exactly what you need:
+
+| Package | What it is | Depends on |
+| --- | --- | --- |
+| **[`@chess-lib/core`](packages/core)** | The chess engine — board, pieces, moves, history and full game rules. Pure, tree-shakeable ESM, **zero runtime dependencies**, no DOM. | — |
+| **[`@chess-lib/react-hooks`](packages/react/hooks)** | A thin reactive layer binding the engine to React via `useSyncExternalStore`. The engine never learns it's inside React. | `core`, React ≥ 19 |
+| **[`@chess-lib/demo`](apps/demo)** | A TanStack Start playground rendering the board on an HTML5 canvas (Konva) with animations, highlights and confetti. | `core`, `react-hooks` |
+
+> The engine has no idea a screen exists. Run it in Node, a worker, a bot, or a browser — the rules are the same.
+
+---
+
+## ✨ Features
+
+### Engine (`@chess-lib/core`)
+
+- ♚ **Complete legal move generation** — pins, checks and self-check are all filtered out by simulating each candidate and reverting it.
+- 🏰 **Every special rule** — castling (king- & queenside, with full path-safety checks), en passant, pawn double-step, and promotion to any piece.
+- 🔁 **Fully reversible history** — every move knows how to `apply()` **and** `undo()` itself, powering unlimited undo/redo with a redo stack.
+- 🏁 **Automatic outcome detection** — checkmate, stalemate and whose turn it is, computed after every move.
+- ⚖️ **Material scoring** — captured-piece tracking and material balance per side.
+- 🧩 **Data-driven pieces** — each piece is described by movement *deltas* + a move kind (`slide` vs `jump`); the base class does the walking. Adding a fairy piece is a few lines.
+- 🆔 **Stable piece identities** — every physical piece carries an immutable `id`, perfect as a React render key across moves and promotions.
+- 🔡 **Fully typed** — tile names (`"E4"`), colors, statuses and promotion targets are all exact string-literal types.
+
+### React bindings (`@chess-lib/react-hooks`)
+
+- 🪝 `useGame()` — subscribe a component to the game; it re-renders on every move, undo or redo.
+- 🖱️ `useBoardSelection()` — click-to-select-and-move logic, legal-move + capture-target sets, and the promotion flow, done for you.
+- ⚔️ `useTileAttackedFrom()` — check detection for highlighting a king in danger.
+- 🗄️ `gameStore` — an external store (`tryMove` / `undo` / `redo`) with zero framework lock-in in the engine itself.
+
+### Demo (`@chess-lib/demo`)
+
+Canvas board (Konva) · click-to-move · animated piece slides · legal-move dots · red capture rings (incl. en passant) · king-in-check tremble · promotion picker dialog · move history · captured-material tray with `+N` advantage · undo/redo · and 🎉 **pawn-shaped confetti** on a win.
+
+---
+
+## 🚀 Quick start
+
+Requires **Node 20+** and **pnpm**.
 
 ```bash
+git clone https://github.com/Carlos-err406/chess-lib.git
+cd chess-lib
 pnpm install
+
+# Play with the interactive board at http://localhost:3000
 pnpm dev
 ```
 
-# Building For Production
+> **Heads up:** the packages aren't published to npm *yet* — they're consumed inside the workspace via `workspace:*`. Publishing `@chess-lib/core` and `@chess-lib/react-hooks` is on the [roadmap](#-roadmap).
 
-To build this application for production:
+---
 
-```bash
-pnpm build
+## 🎮 Using the engine
+
+The engine is a plain object graph. No config, no globals — just `new Game()`.
+
+```ts
+import { Game, Colors } from '@chess-lib/core'
+
+const game = new Game()
+
+// Whose move is it?
+game.turnColor // Colors.WHITE ('white')
+
+// Read legal moves for a square, then play one
+const from = game.board.tileAtName('E2')
+game.getLegalMoves(from)          // [Tile E3, Tile E4]
+
+const status = game.tryMove(from, game.board.tileAtName('E4'))
+status // 'ongoing' | 'white wins' | 'black wins' | 'stale mate'
+
+// Time travel
+game.undo()
+game.redo()
+
+// Inspect the position
+game.isCheck(Colors.WHITE)        // false
+game.getMaterial()                // { white: {...}, black: {...} }
+console.log(game.board.toString())
 ```
 
-## Testing
+`board.toString()` gives you a dependency-free ASCII view (uppercase = white, lowercase = black):
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
-
-```bash
-pnpm test
+```text
+  ABCDEFGH
+8 rnbqkbnr
+7 pppppppp
+6
+5
+4
+3
+2 PPPPPPPP
+1 RNBQKBNR
 ```
 
-## Styling
+Promotions are a third argument:
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `pnpm add @tailwindcss/vite tailwindcss --dev`
-
-## Linting & Formatting
-
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
-
-```bash
-pnpm lint
-pnpm format
-pnpm check
+```ts
+game.tryMove(from, to, 'Queen') // 'Queen' | 'Rook' | 'Bishop' | 'Knight'
 ```
 
-## Deploy with Nitro
-
-This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
-
-```bash
-npm run build
-node dist/server/index.mjs
-```
-
-The build output is a self-contained Node server. To deploy, push the `dist/` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
-
-For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tuning, see https://v3.nitro.build/deploy.
-
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpm dlx shadcn@latest add button
-```
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
+## ⚛️ Using it in React
 
 ```tsx
-import { Link } from '@tanstack/react-router'
-```
+import { useGame, useBoardSelection } from '@chess-lib/react-hooks'
 
-Then anywhere in your JSX you can use it like so:
+function ChessBoard() {
+  const game = useGame() // re-renders on every move/undo/redo
+  const { selection, clickTile, promotionTarget, completePromotion } =
+    useBoardSelection()
 
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
   return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
+    <div className="board">
+      {game.board.getTilesWithPieces().map((tile) => (
+        <Piece
+          key={tile.piece.id} // stable identity → smooth animations
+          tile={tile}
+          selected={selection?.from === tile}
+          onClick={() => clickTile(tile)}
+        />
       ))}
-    </ul>
+      {promotionTarget && <PromotionPicker onPick={completePromotion} />}
+    </div>
   )
 }
 ```
 
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
+`useBoardSelection` handles the whole interaction state machine: first click selects a piece and exposes its legal moves; the second click moves it (or opens the promotion picker when appropriate).
 
-# Demo files
+---
 
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
+## 🧠 How it works
 
-# Learn More
+A few design choices keep the engine small and easy to follow:
 
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+- **Pieces are described, not scripted.** A piece declares *how* it moves (`MoveDelta`s like `[1, 1]`) and *what kind* of mover it is — a `SLIDE`r walks a ray until it hits something, a `JUMP`er hops once. The shared base class in [`piece.ts`](packages/core/src/models/pieces/piece.ts) does the traversal; pawns override for their quirks.
+- **Legality = "does this leave my king safe?"** `getLegalMoves` generates pseudo-legal candidates, then for each one it `simulateMove` → checks for self-check → **always reverts**. No board is ever left mutated by a query.
+- **Moves are reversible commands.** Each move type (`GenericMove`, `CastlingMove`, `InPassantMove`, `PawnDoubleStepMove`, `PromotionMove`) implements `apply` / `undo`, so history, undo/redo and move simulation all share one mechanism.
+- **React stays at arm's length.** `gameStore` wraps the pure `Game` in an external store and bumps a version counter on each mutation; `useSyncExternalStore` does the rest. Swap in Vue, Svelte or a CLI and the engine doesn't change a line.
 
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+---
+
+## 🗂️ Project structure
+
+```
+chess-lib/
+├── packages/
+│   ├── core/                # @chess-lib/core — the engine
+│   │   └── src/models/
+│   │       ├── board/       # Board + Tile
+│   │       ├── pieces/      # Piece base class + the 6 pieces
+│   │       ├── history/     # Move command types + History
+│   │       └── game.ts      # Game — rules, status, legality
+│   └── react/hooks/         # @chess-lib/react-hooks — React bindings
+└── apps/
+    └── demo/                # @chess-lib/demo — TanStack Start + Konva
+```
+
+## 🛠️ Scripts
+
+Run from the repo root:
+
+| Command | Does |
+| --- | --- |
+| `pnpm dev` | Start the demo app on port 3000 |
+| `pnpm build` | Build the demo for production |
+| `pnpm build:packages` | Build the publishable packages (ESM + `.d.ts`) |
+| `pnpm typecheck` | Type-check every workspace package |
+| `pnpm test` | Run the test suites (Vitest) |
+| `pnpm format` | Prettier + ESLint autofix |
+
+**Stack:** TypeScript · pnpm workspaces · tsup (bundling) · Vitest · ESLint + Prettier. The demo adds TanStack Start, React 19, Tailwind CSS v4, shadcn/Radix, Konva, and `canvas-confetti`.
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Publish `@chess-lib/core` and `@chess-lib/react-hooks` to npm
+- [ ] FEN / PGN import & export
+- [ ] Threefold-repetition and fifty-move-rule draws
+- [ ] Drag-to-move on the demo board
+- [ ] A small opponent/AI so you can play the demo solo
+
+## 📄 License
+
+[MIT](#-license) © [Carlos Daniel Vilaseca Illnait](https://github.com/Carlos-err406)
