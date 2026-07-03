@@ -4,6 +4,3 @@ yarn.lock
 
 # build artifacts
 **/dist
-**/.output
-**/.nitro
-**/.tanstack

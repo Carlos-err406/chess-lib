@@ -31,6 +31,6 @@ export const useCelebrate = () => {
       shapes: [PAWN_SHAPE],
       particleCount: 100,
       spread: 200,
-      scalar: 4,
+      scalar: 6,
     })
 }

@@ -10,5 +10,5 @@ export function cn(...inputs: ClassValue[]) {
 
 export function buildPieceAssetUrl(color: Colors, name: string): string {
   const colorSuffix = color === Colors.WHITE ? 'w' : 'b'
-  return `${ASSET_PIECE_BASE_URL}/${ASSET_STYLE}/${name}-${colorSuffix}.svg`
+  return `${ASSET_PIECE_BASE_URL}/${ASSET_STYLE}/${name.toLowerCase()}-${colorSuffix}.svg`
 }

@@ -30,7 +30,7 @@ A framework-agnostic TypeScript chess engine, thin React hooks that bind it to a
 | --- | --- | --- |
 | **[`@chess-lib/core`](packages/core)** | The chess engine — board, pieces, moves, history and full game rules. Pure, tree-shakeable ESM, **zero runtime dependencies**, no DOM. | — |
 | **[`@chess-lib/react-hooks`](packages/react/hooks)** | A thin reactive layer binding the engine to React via `useSyncExternalStore`. The engine never learns it's inside React. | `core`, React ≥ 19 |
-| **[`@chess-lib/demo`](apps/demo)** | A TanStack Start playground rendering the board on an HTML5 canvas (Konva) with animations, highlights and confetti. | `core`, `react-hooks` |
+| **[`@chess-lib/demo`](apps/demo)** | A Vite + React SPA rendering the board on an HTML5 canvas (Konva) with animations, highlights and confetti. | `core`, `react-hooks` |
 
 > The engine has no idea a screen exists. Run it in Node, a worker, a bot, or a browser — the rules are the same.
 
@@ -189,7 +189,7 @@ chess-lib/
 │   │       └── game.ts      # Game — rules, status, legality
 │   └── react/hooks/         # @chess-lib/react-hooks — React bindings
 └── apps/
-    └── demo/                # @chess-lib/demo — TanStack Start + Konva
+    └── demo/                # @chess-lib/demo — Vite + React + Konva
 ```
 
 ## 🛠️ Scripts
@@ -205,7 +205,7 @@ Run from the repo root:
 | `pnpm test` | Run the test suites (Vitest) |
 | `pnpm format` | Prettier + ESLint autofix |
 
-**Stack:** TypeScript · pnpm workspaces · tsup (bundling) · Vitest · ESLint + Prettier. The demo adds TanStack Start, React 19, Tailwind CSS v4, shadcn/Radix, Konva, and `canvas-confetti`.
+**Stack:** TypeScript · pnpm workspaces · tsup (bundling) · Vitest · ESLint + Prettier. The demo adds Vite, React 19, Tailwind CSS v4, shadcn/Radix, Konva, and `canvas-confetti`.
 
 ---
 
