@@ -15,6 +15,13 @@ export default [
     },
   },
   {
-    ignores: ['eslint.config.js', 'prettier.config.js', '.output/**'],
+    ignores: [
+      'eslint.config.js',
+      'prettier.config.js',
+      '**/dist/**',
+      '**/.output/**',
+      '**/.nitro/**',
+      '**/.tanstack/**',
+    ],
   },
 ]
