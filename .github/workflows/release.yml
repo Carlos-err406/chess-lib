@@ -1,0 +1,66 @@
+name: Release
+
+# Publishes @chess-lib/core and @chess-lib/react-hooks to npm whenever a
+# version tag is pushed, e.g.:
+#
+#   pnpm version:packages patch        # bump BOTH packages in lockstep
+#   git commit -am "release: v0.1.1"
+#   git tag v0.1.1
+#   git push origin main --tags
+#
+# Auth is via npm Trusted Publishing (OIDC) — no token/secret required.
+# One-time setup: on each package's page at npmjs.com, under
+# Settings → Trusted Publisher, add a GitHub Actions publisher with:
+#   Organization or user: Carlos-err406
+#   Repository:           chess-lib
+#   Workflow filename:    release.yml
+# (Repeat for @chess-lib/core and @chess-lib/react-hooks.)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Never run two releases for the same tag at once.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write # create the GitHub Release
+  id-token: write # OIDC trusted publishing to npm + provenance attestation
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Must set up pnpm before Node so setup-node's pnpm cache works.
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4 # reads the "packageManager" field
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Publishes every non-private workspace package in dependency order
+      # (core before react-hooks). Each package's `prepublishOnly` rebuilds
+      # its dist/, and publishConfig.access=public makes the scoped packages
+      # public. `workspace:^` deps are rewritten to real ranges by pnpm.
+      #
+      # No NODE_AUTH_TOKEN: pnpm exchanges the GitHub OIDC token (id-token
+      # permission above) for a short-lived npm credential via the registered
+      # Trusted Publisher, and --provenance attaches a signed build attestation.
+      - name: Publish to npm
+        run: pnpm -r publish --no-git-checks --provenance
+
+      - name: Create GitHub Release
+        run: gh release create "${{ github.ref_name }}" --generate-notes --verify-tag
+        env:
+          GH_TOKEN: ${{ github.token }}

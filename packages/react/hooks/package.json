@@ -1,8 +1,27 @@
 {
   "name": "@chess-lib/react-hooks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React hooks and store binding @chess-lib/core to a React UI.",
   "license": "MIT",
+  "author": "Carlos Daniel Vilaseca Illnait (https://github.com/Carlos-err406)",
+  "homepage": "https://github.com/Carlos-err406/chess-lib#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Carlos-err406/chess-lib.git",
+    "directory": "packages/react/hooks"
+  },
+  "bugs": {
+    "url": "https://github.com/Carlos-err406/chess-lib/issues"
+  },
+  "keywords": [
+    "chess",
+    "chess-engine",
+    "react",
+    "react-hooks",
+    "use-sync-external-store",
+    "board-game",
+    "typescript"
+  ],
   "type": "module",
   "sideEffects": false,
   "files": [
@@ -15,6 +34,7 @@
     ".": "./src/index.ts"
   },
   "publishConfig": {
+    "access": "public",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -27,11 +47,12 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist",
+    "prepublishOnly": "pnpm run build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@chess-lib/core": "workspace:*"
+    "@chess-lib/core": "workspace:^"
   },
   "peerDependencies": {
     "react": ">=19"

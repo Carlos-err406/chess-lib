@@ -6,6 +6,7 @@
 
 A framework-agnostic TypeScript chess engine, thin React hooks that bind it to any UI, and a polished Konva-rendered demo. All in one pnpm monorepo.
 
+[![npm](https://img.shields.io/npm/v/@chess-lib/core?style=flat-square&logo=npm&color=CB3837&label=%40chess-lib%2Fcore)](https://www.npmjs.com/package/@chess-lib/core)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](#-license)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![React 19](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)
@@ -73,7 +74,14 @@ pnpm install
 pnpm dev
 ```
 
-> **Heads up:** the packages aren't published to npm *yet* — they're consumed inside the workspace via `workspace:*`. Publishing `@chess-lib/core` and `@chess-lib/react-hooks` is on the [roadmap](#-roadmap).
+### 📦 Or just install the packages
+
+Both packages are published to npm — drop them into your own project:
+
+```bash
+npm install @chess-lib/core          # the framework-agnostic engine
+npm install @chess-lib/react-hooks   # React bindings (depends on core)
+```
 
 ---
 
@@ -200,9 +208,25 @@ Run from the repo root:
 
 ---
 
+## 🚢 Releasing
+
+Publishing is automated. Bump both packages in lockstep, tag, and push — GitHub Actions does the rest, publishing both packages to npm:
+
+```bash
+pnpm version:packages patch    # bumps core + react-hooks together (patch|minor|major)
+git commit -am "release: v0.1.1"
+git tag v0.1.1
+git push origin main --tags
+```
+
+The [`Release` workflow](.github/workflows/release.yml) fires on any `v*` tag. It needs a one-time `NPM_TOKEN` repository secret — an npm **Automation** token, which bypasses 2FA.
+
+---
+
 ## 🗺️ Roadmap
 
-- [ ] Publish `@chess-lib/core` and `@chess-lib/react-hooks` to npm
+- [x] Publish `@chess-lib/core` and `@chess-lib/react-hooks` to npm
+- [x] Automated releases via GitHub Actions
 - [ ] FEN / PGN import & export
 - [ ] Threefold-repetition and fifty-move-rule draws
 - [ ] Drag-to-move on the demo board
