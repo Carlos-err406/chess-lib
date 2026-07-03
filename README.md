@@ -7,6 +7,7 @@
 A framework-agnostic TypeScript chess engine, thin React hooks that bind it to any UI, and a polished Konva-rendered demo. All in one pnpm monorepo.
 
 [![npm](https://img.shields.io/npm/v/@chess-lib/core?style=flat-square&logo=npm&color=CB3837&label=%40chess-lib%2Fcore)](https://www.npmjs.com/package/@chess-lib/core)
+[![npm](https://img.shields.io/npm/v/@chess-lib/react-hooks?style=flat-square&logo=npm&color=CB3837&label=%40chess-lib%2Freact-hooks)](https://www.npmjs.com/package/@chess-lib/react-hooks)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](#-license)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![React 19](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)
