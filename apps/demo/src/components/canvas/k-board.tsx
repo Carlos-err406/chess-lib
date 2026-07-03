@@ -1,4 +1,5 @@
 import { TILE_SIZE } from '#/lib/conf'
+import { useElementSize } from '#/lib/use-element-size'
 import type { Col, Row } from '@chess-lib/core'
 import { Board } from '@chess-lib/core'
 import { useBoardSelection, useGame } from '@chess-lib/react-hooks'
@@ -10,10 +11,19 @@ import { KBoardNumbers } from './k-board-numbers'
 import { KPieces } from './k-pieces'
 import { KTile } from './k-tile'
 
+// The board is drawn in a fixed coordinate space (9 tiles: 8 ranks/files + the
+// coordinate gutter). We scale the whole Stage to fit its container so every
+// child keeps using these design-space units.
+const BOARD_SIZE = TILE_SIZE * 9
+
 export const KBoard: FC = () => {
   const game = useGame()
   const { selection, promotionTarget, clickTile, completePromotion } =
     useBoardSelection()
+
+  const [containerRef, { width, height }] = useElementSize<HTMLDivElement>()
+  const size = Math.floor(Math.min(width, height))
+  const scale = size / BOARD_SIZE
 
   const renderTile = (col: Col, row: Row) => {
     const tile = game.board.tileAtParts(col, row)
@@ -36,20 +46,29 @@ export const KBoard: FC = () => {
         color={game.turnColor}
         onPieceSelected={completePromotion}
       />
-      <Stage
-        height={TILE_SIZE * 9}
-        width={TILE_SIZE * 9}
-        className="shadow-[0_0_10px_10px_#0000001a]"
+      <div
+        ref={containerRef}
+        className="flex h-full w-full items-center justify-center"
       >
-        <Layer>
-          {Board.Rows.map((row) =>
-            Board.Cols.map((col) => renderTile(col, row)),
-          )}
-          <KBoardLetters />
-          <KBoardNumbers />
-          <KPieces />
-        </Layer>
-      </Stage>
+        {size > 0 && (
+          <Stage
+            height={size}
+            width={size}
+            scaleX={scale}
+            scaleY={scale}
+            className="shadow-[0_0_10px_10px_#0000001a]"
+          >
+            <Layer>
+              {Board.Rows.map((row) =>
+                Board.Cols.map((col) => renderTile(col, row)),
+              )}
+              <KBoardLetters />
+              <KBoardNumbers />
+              <KPieces />
+            </Layer>
+          </Stage>
+        )}
+      </div>
     </>
   )
 }

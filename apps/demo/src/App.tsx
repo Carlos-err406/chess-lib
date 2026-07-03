@@ -10,13 +10,24 @@ Konva.pixelRatio = 3.125 // increase the dpi
 export function App() {
   return (
     <ConfettiProvider>
-      <div className="grid grid-cols-[1fr_120px_1fr] gap-5 p-5 h-svh w-svw overflow-clip">
-        <KBoard />
+      <div className="flex min-h-svh w-full flex-col gap-4 p-4 lg:grid lg:h-svh lg:min-h-0 lg:grid-cols-[1fr_150px_450px] lg:gap-5 lg:overflow-hidden">
+        {/* Board — square on mobile, fills the row height on desktop */}
+        <div className="aspect-square w-full min-h-0 min-w-0 lg:aspect-auto lg:h-full">
+          <KBoard />
+        </div>
+
+        {/* Status + controls */}
         <div className="flex flex-col gap-3">
           <GameStatus />
-          <UndoRedoButtons />
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
+            <UndoRedoButtons />
+          </div>
         </div>
-        <RightPanel />
+
+        {/* Move history + captured material */}
+        <div className="h-[60svh] min-h-0 lg:h-full">
+          <RightPanel />
+        </div>
       </div>
     </ConfettiProvider>
   )
