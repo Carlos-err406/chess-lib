@@ -44,6 +44,7 @@ export const KTile: FC<{
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
       onClick={onClick}
+      onTap={onClick}
     >
       <Rect
         x={x + strokeWidth / 2}
