@@ -1,6 +1,6 @@
 {
   "name": "@chess-lib/react-hooks",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "React hooks and store binding @chess-lib/core to a React UI.",
   "license": "MIT",
   "author": "Carlos Daniel Vilaseca Illnait (https://github.com/Carlos-err406)",
